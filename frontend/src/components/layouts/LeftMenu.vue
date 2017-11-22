@@ -17,7 +17,7 @@
 
                         <template slot="title">{{ module.title }}</template>
 
-                        <el-menu-item style="padding-left: 0px; " :index="api.name" v-for="api in module.apis" @click="setCurrent(project,module,api)")>
+                        <el-menu-item style="padding-left: 0px; " :index="api.name" v-for="api in module.apis"  >
                             <el-row>
                                 <el-col :span="4">
                                     <span class="request_method" :style="{ color: activeColor(api.method)}">{{ api.method }} </span>
@@ -37,17 +37,48 @@
 
                             </el-row>
                         </el-menu-item>
-                        <el-menu-item index="0" style="padding-left: 50px"><i class="el-icon-plus"></i></el-menu-item>
+                        <el-menu-item index="0" style="padding-left: 50px" @click="addApi()"><i class="el-icon-plus"></i>接口</el-menu-item>
                     </el-submenu>
+                    <el-menu-item index="0" style="padding-left: 50px" @click="addModule()"><i class="el-icon-plus"></i>模块</el-menu-item>
 
                 </el-submenu>
+                <el-menu-item index="0" style="padding-left: 50px" @click="addProject()"><i class="el-icon-plus"></i>项目</el-menu-item>
+
             </el-submenu>
 
             <el-menu-item index="2"><i class="el-icon-menu"></i>导航二</el-menu-item>
             <el-menu-item index="3"><i class="el-icon-setting"></i>导航三</el-menu-item>
         </el-menu>
 
+ <!--添加-->
 
+
+
+        <el-dialog title="添加" :visible.sync="addBox">
+            <el-form :model="form">
+                <el-form-item label="名称" >
+                    <el-input :model="form.name"  auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="简介" >
+                    <el-input :model="form.description"  auto-complete="off"></el-input>
+
+                </el-form-item>
+                    <div v-if="form.module_id">
+
+                        <el-form-item label="path" >
+                    <el-input :model="form.path"></el-input>
+                        </el-form-item>
+                        <el-form-item label="Method" >
+                            <el-input :model="form.method"></el-input>
+                        </el-form-item>
+                    </div>
+
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button >取 消</el-button>
+                <el-button type="primary" >确 定</el-button>
+            </div>
+        </el-dialog>
 
     </div>
 
@@ -65,6 +96,10 @@
                     project: {},
                     module: {},
                     api: {}
+                },
+                addBox: false,
+                form:{
+                    module_id:1
                 }
             }
         },
@@ -95,8 +130,6 @@
                return color
             },
             removeApi: function(project,module,api){
-
-
                 this.removeApiBox =false
                 let project_index = this.projects.indexOf(project)
                 let module_index = project.modules.indexOf(module)
@@ -112,6 +145,13 @@
             },
             removeApiConfirm(){
                     this.removeApiBox = true
+            },
+            addProject(){
+                this.addBox = true
+            },
+            addModule(){},
+            addApi(){
+                this.addBox = true
             }
         },
         created:function () {

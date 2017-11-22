@@ -296,7 +296,7 @@
                         </el-dropdown-menu>
                     </el-dropdown>
 
-                    <el-button  type="primary">保存</el-button>
+                    <el-button  type="primary" @click="saveDoc">保存</el-button>
                 </el-col>
             </el-row>
         <el-row >
@@ -509,9 +509,19 @@
               this.commentaries +='*/'
               this.previewLoading = false
           },(response)=>{
-              this.$message.error('生成出错');
+              this.$message.error('生成出错')
           })
-      }
+      },
+        saveDoc(){
+            let uri = getUri('doc','resource')
+            let data = this.document
+            this.axios.post(uri,data).then((response)=>{
+                this.$message.success(response.data.data)
+            },(response)=>{
+                this.$message.error('保存失败！')
+            })
+            console.log(this.document)
+        }
     },
     components: {
       QueryParam, [VueHtmlJson.name]: VueHtmlJson

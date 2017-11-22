@@ -9,7 +9,7 @@ import VueResource from 'vue-resource'
 import axios from './http'
 import {getUri} from './config/config.js'
 import Vuex from 'vuex'
-import store from './vuex/store'
+import store from './store'
 import VueClipboard from 'vue-clipboard2'
 
 Vue.use(VueClipboard)

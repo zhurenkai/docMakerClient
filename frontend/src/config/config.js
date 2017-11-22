@@ -13,6 +13,7 @@ const constant = {
         user_project: 'user-project'
     },
     doc: {
-        generate: 'doc/generate'
+        generate: 'doc/generate',
+        resource : 'document'
     }
 }
