@@ -11,7 +11,9 @@ import {getUri} from './config/config.js'
 import Vuex from 'vuex'
 import store from './store'
 import VueClipboard from 'vue-clipboard2'
+import helper from './helper'
 
+Vue.use(helper)
 Vue.use(VueClipboard)
 Vue.use(VueResource)
 // install N3

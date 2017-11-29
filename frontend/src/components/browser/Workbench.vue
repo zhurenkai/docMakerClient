@@ -1,5 +1,5 @@
 <template>
-<div id='workbentch'>
+<div id='workbench' >
 
     <el-row>
   <el-col :span="3"><div class="grid-content bg-purple">
@@ -52,9 +52,14 @@
 
   </div></el-col>
 
-  <el-col :span="2"><div class="grid-content bg-purple-light">
+  <el-col :span="2">
+      <div class="grid-content bg-purple-light">
   <el-button type="primary" @click="submitForm('Form')">Send</el-button>
-  </div></el-col>
+        </div>
+  </el-col>
+    <el-col :span="2">
+        <el-button @click="saveApi">save</el-button>
+    </el-col>
     <el-col :span="2"><el-button @click="createDocument()">生成文档</el-button></el-col>
 </el-row>
 
@@ -172,6 +177,7 @@
 
     <el-dialog  title="文档预览" :visible.sync="previewBox">
 
+        <div v-if="!docShowType" >
         <el-row :gutter="20" style="text-align: left ;font-size: large">
             <el-col :span="2" size="large"><el-tag>{{ Form.method }}</el-tag> </el-col>
             <el-col :span="22" ><span style="color:red">{host}</span> {{ Form.request_uri }}</el-col>
@@ -280,21 +286,33 @@
             </el-table-column>
 
         </el-table>
+        </div>
+
+<markdown
+        v-if="docShowType=='markdown'"
+        :content="markdownDoc"
+></markdown>
 
 <!--注释-->
         <el-row>
                 <el-col :span="8" :offset="16">
 
-                    <el-dropdown>
-  <span class="el-dropdown-link">
-    下载<i class="el-icon-caret-bottom el-icon--right"></i>
-  </span>
-                        <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item>markdown</el-dropdown-item>
-                            <el-dropdown-item>swagger</el-dropdown-item>
+                    <el-select v-model="docShowType" placeholder="格式" @change="generateDoc">
+                        <el-option
+                                key="默认"
+                                label="默认"
+                                value="">
+                        </el-option>
+                        <el-option
+                                key="markdown"
+                                value="markdown">
+                        </el-option>
 
-                        </el-dropdown-menu>
-                    </el-dropdown>
+                        <el-option
+                                key="swagger"
+                                value="swagger">
+                        </el-option>
+                    </el-select>
 
                     <el-button  type="primary" @click="saveDoc">保存</el-button>
                 </el-col>
@@ -330,7 +348,18 @@
   import QueryParam from './QueryParam.vue'
   import VueHtmlJson from 'vue-html-json'
   import {getUri} from '../../config/config.js'
+  import Markdown from '../doc/Markdown.vue'
+  import {mapState} from 'vuex'
+//  import {stringify} from 'json-stable-stringify'
   export default {
+  components: {
+      QueryParam, [VueHtmlJson.name]: VueHtmlJson, Markdown
+  },
+      computed:{
+          currentApi(){
+              return this.$store.state.selectedApi
+          }
+      },
     data () {
       return {
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -361,7 +390,9 @@
         project_hosts: [],
         document:{},
         commentaries:'',
-          api_name:'测试API'
+          api_name:'测试API',
+          docShowType: '',
+          markdownDoc: ''
       }
     },
     methods: {
@@ -502,7 +533,7 @@
           this.previewLoading = true
           this.axios.post(uri,data).then((response)=>{
                 this.document = response.data.data
-              this.commentaries = "/**\n *"+this.api_name + "\n"
+              this.commentaries = "/**\n *"+this.currentApi.name + "\n"
                this.document.params.forEach((param)=>{
                     this.commentaries +=' *@param '+ param.type+ ' '+param.key + ' ' +param.statement+'\n'
                })
@@ -521,10 +552,40 @@
                 this.$message.error('保存失败！')
             })
             console.log(this.document)
+        },
+        generateDoc(value){
+            if(value=='markdown'){
+                this.markdownDoc = this.generateMarkdown()
+            }
+        },
+        generateMarkdown () {
+            let text = '### ' +this.currentApi.name +'\n\n'
+                +'  [**' + this.Form.method +'**]{host}' + this.Form.request_uri  +'\n\n'
+                    + '>'+ this.currentApi.description +'\n\n'
+            +'**请求参数说明**\n\n'
+            +'|参数|说明|类型|必填|备注| \n |---|---|---|---|---| \n'
+            console.log(this.currentApi.name)
+                this.document.params.forEach((param)=>{
+                text += '|'+param.key+ '|'+ param.statement+'|' + param.type +'|' + param.required +'|\n'
+                })
+            text += '\n **返回参数说明**\n\n'
+                +'|参数|说明|类型|备注| \n |---|---|---|---| \n'
+            if(this.document.response){
+                this.document.response.forEach((param)=>{
+                    text += '|'+param.key+ '|'+ param.statement+'|' + param.type +'|\n'
+                })
+            }
+            var stringify = require('json-stable-stringify')
+            text += '\n``` \n'
+            text +=  stringify(this.jsonData,{space: ' '})
+            text += '\n``` \n'
+
+            return text
+
+        },
+        saveApi(){
+            let api = this.currentApi
         }
-    },
-    components: {
-      QueryParam, [VueHtmlJson.name]: VueHtmlJson
     }
   }
 </script>

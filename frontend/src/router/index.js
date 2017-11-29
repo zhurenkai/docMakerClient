@@ -22,7 +22,7 @@ const routes = [
       path: '/workbench',
       name: 'Workbentch',
       components: {
-        default:require('../components/browser/Workbench'),
+        default:require('../components/browser/Tabs'),
           left_menu:require('../components/layouts/LeftMenu'),
           top_menu:require('../components/layouts/TopMenu'),
     },

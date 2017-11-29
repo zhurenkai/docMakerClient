@@ -7,10 +7,13 @@ export const getUri = (type,key ) =>
 
 const constant = {
     api: {
-        api:'apis/'
+        resource:'api/'
     },
     project: {
         user_project: 'user-project'
+    },
+    module: {
+        resource: 'module'
     },
     doc: {
         generate: 'doc/generate',
