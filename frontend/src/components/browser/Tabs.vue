@@ -10,7 +10,7 @@
                     :label="item.name"
                     :name="String(index)"
             >
-                <workbench></workbench>
+                <workbench :api="item"></workbench>
             </el-tab-pane>
 
         </el-tabs>

@@ -45,7 +45,12 @@ class client extends Controller
             $params['form_params'] = $this->in;
         }
         $params['headers'] = $header;
-        $res = $client->request($request_method, $url, $params);
+        try{
+            $res = $client->request($request_method, $url, $params);
+
+        }catch(Exception $exception){
+           throw new Exception($exception->getMessage());
+        }
         echo  $res->getBody() ;
     }
 

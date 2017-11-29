@@ -14,7 +14,7 @@
     <el-col :span="3">
         <!--Method选项-->
 
-        <el-select v-model="Form.method" placeholder="请选择">
+        <el-select v-model="currentApi.method" placeholder="请选择">
 
             <el-option
                     v-for="item in methods"
@@ -26,7 +26,7 @@
     </el-col>
 
   <el-col :span="14"><div class="grid-content bg-purple-light">
-    <el-input v-model="Form.request_uri" placeholder="URI" @change="checkUriParams()">
+    <el-input v-model="currentApi.path" placeholder="URI" @change="checkUriParams()">
 
         <!--host-->
 
@@ -36,10 +36,10 @@
                    allow-create
         >
             <el-option
-                    v-for="item in project_hosts"
-                    :key="item.value"
+                    v-for="item in currentApi.hosts"
+                    :key="item.name"
                     :label="item.label"
-                    :value="item.value">
+                    :value="item.name">
             </el-option>
         </el-select>
 
@@ -179,8 +179,8 @@
 
         <div v-if="!docShowType" >
         <el-row :gutter="20" style="text-align: left ;font-size: large">
-            <el-col :span="2" size="large"><el-tag>{{ Form.method }}</el-tag> </el-col>
-            <el-col :span="22" ><span style="color:red">{host}</span> {{ Form.request_uri }}</el-col>
+            <el-col :span="2" size="large"><el-tag>{{ currentApi.method }}</el-tag> </el-col>
+            <el-col :span="22" ><span style="color:red">{host}</span> {{ currentApi.path }}</el-col>
         </el-row>
 
         <!--参数说明-->
@@ -356,9 +356,10 @@
       QueryParam, [VueHtmlJson.name]: VueHtmlJson, Markdown
   },
       computed:{
-          currentApi(){
-              return this.$store.state.selectedApi
-          }
+
+      },
+      props:{
+      api:Object
       },
     data () {
       return {
@@ -368,19 +369,10 @@
         previewBox:false,
         previewLoading:false,
         Form: {
-          dataList: [{
-            k: '',
-            v: '',
-            use: true,
-            required: true,
-            value_type: 'file',
-            keyState: '',
-            file: ''
-          }],
-          method: 'GET',
-          request_uri: '/party?id=aa&title=bb',
-          request_host: 'https://www.randqun.com'
+          dataList: [],
+          request_host: ''
         },
+        currentApi:this.api,
         uriParamsArr: {},
         searchQuery: '',
         jsonData: false,
@@ -416,38 +408,20 @@
                 formData.append(obj.k, obj.v)
               }
             }
-            formData.append('request_uri', this.Form.request_uri)
+            formData.append('request_uri', this.currentApi.path)
             formData.append('request_host', this.Form.request_host)
-            formData.append('request_method', this.Form.method)
+            formData.append('request_method', this.currentApi.method)
             this.$http.post('client-api/client/request', formData).then((response) => {
               this.request_loading = false
               this.jsonData = response.body
             }, (response) => {
-                 // error callback
+                this.$message.error('请求出错')
             })
           } else {
             console.log('error submit!!')
             return false
           }
         })
-      },
-      getProjectHosts () {
-          let project_id = this.project_id
-          let host_list = []
-         this.axios.get('api/api/project-host/'+project_id).then((response)=>{
-             if(response.data.code){
-                 this.$message.error(response.data.error)
-             }
-            let hosts = response.data.data
-            hosts.forEach((host)=>{
-                let project_host = {
-                    value: host.name,
-                    label: host.description
-                }
-                this.project_hosts.push(project_host)
-            })
-
-         })
       },
       resetForm (formName) {
         this.$refs[formName].resetFields()
@@ -472,7 +446,7 @@
         this.Form.dataList[index].v = ''
       },
       checkUriParams () {
-        let uri = this.Form.request_uri
+        let uri = this.currentApi.path
         let paramArr = []
         let start = uri.indexOf('?')
         if (start !== -1) {
@@ -513,18 +487,18 @@
         }
         let newUriParam = paramArr.join('&')
         console.log(newUriParam)
-        let start = this.Form.request_uri.indexOf('?')
-        let str = this.Form.request_uri.substr(0, start)
+        let start = this.currentApi.path.indexOf('?')
+        let str = this.currentApi.path.substr(0, start)
         let newUri = str + '?' + newUriParam
         console.log(newUri)
-        this.Form.request_uri = newUri
+        this.currentApi.path = newUri
       },
       createDocument () {
             this.checkUriParams()
           this.previewBox = true
             let data = {
-                uri:this.Form.request_uri,
-                method: this.Form.method,
+                uri:this.currentApi.path,
+                method: this.currentApi.method,
                 queryParam:this.uriParamsArr,
                 formParam: this.Form.dataList,
                 response:this.jsonData
@@ -560,7 +534,7 @@
         },
         generateMarkdown () {
             let text = '### ' +this.currentApi.name +'\n\n'
-                +'  [**' + this.Form.method +'**]{host}' + this.Form.request_uri  +'\n\n'
+                +'  [**' + this.currentApi.method +'**]{host}' + this.currentApi.path  +'\n\n'
                     + '>'+ this.currentApi.description +'\n\n'
             +'**请求参数说明**\n\n'
             +'|参数|说明|类型|必填|备注| \n |---|---|---|---|---| \n'
@@ -586,7 +560,18 @@
         saveApi(){
             let api = this.currentApi
         }
-    }
+    },
+      created(){
+      let default_host = this.currentApi.hosts.filter(function(item){
+         return  item.is_default ==1
+      })
+          if(default_host.length!=0){
+              this.Form.request_host = default_host[0].name
+
+          }
+      }
+
+
   }
 </script>
 <style scoped>

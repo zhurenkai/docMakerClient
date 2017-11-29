@@ -4,7 +4,9 @@ exports.install = function (Vue, options) {
             this.$message.error(response.data.error)
             return false
         }else{
-            this.$message.success('成功')
+            if(arguments[1]){
+                this.$message.success(arguments[1])
+            }
             return response.data.data
         }
     };

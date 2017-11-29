@@ -17,7 +17,7 @@
 
                         <template slot="title">{{ module.name }}</template>
 
-                        <el-menu-item style="padding-left: 0px; " :index="api.name" v-for="api,index in module.apis" :key="index"  @click="$store.commit('selectApi',api)">
+                        <el-menu-item style="padding-left: 0px; " :index="api.name" v-for="api,index in module.apis" :key="index"  @click="addTab(api.id)">
                             <el-row>
                                 <el-col :span="4">
                                     <span class="request_method" :style="{ color: activeColor(api.method)}">{{ api.method }} </span>
@@ -180,6 +180,13 @@
                 },(response)=>{
                     this.$message.error('创建失败')
                 })
+            },
+            addTab(apiId){
+                let uri = getUri('api','resource')
+                this.axios.get(uri+'/'+apiId).then((response)=>{
+                    let data = this.getApiData(response)
+                    this.$store.commit('addTab',data);
+                },(response)=>{})
             }
         },
         created:function () {
