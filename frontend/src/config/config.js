@@ -6,6 +6,9 @@ export const getUri = (type,key ) =>
 }
 
 const constant = {
+    client:{
+        request: 'client-api/client/request'
+    },
     api: {
         resource:'api/'
     },

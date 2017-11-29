@@ -74,39 +74,39 @@
                 @selfUpdate="changeParam"
     ></query-param>
 
-<div v-for="param in getParams">
-<el-row>
-  <el-col :span="3">
-    <el-input v-model="param.k"></el-input>
-  </el-col>
-  <el-col :span="5">
-  <el-input></el-input>
-  </el-col>
+<!--<div v-for="param in currentApi.params">-->
+<!--<el-row>-->
+  <!--<el-col :span="3">-->
+    <!--<el-input v-model="param.name"></el-input>-->
+  <!--</el-col>-->
+  <!--<el-col :span="5">-->
+  <!--<el-input></el-input>-->
+  <!--</el-col>-->
 
-  <el-col :span="6">
-  <el-input v-model="param.v"></el-input>
-  </el-col>
-</el-row>
-</div>
+  <!--<el-col :span="6">-->
+  <!--<el-input v-model="param.value"></el-input>-->
+  <!--</el-col>-->
+<!--</el-row>-->
+<!--</div>-->
 
 <el-form-item
-  v-for="(domain, index) in Form.dataList"
-  :key="domain.key"
-  :prop="'dataList.' + index + '.v'"
+  v-for="(item, index) in currentApi.params"
+  :key="item.name"
+
 >
   <el-row>
     <el-col :span="2"><div class="grid-content bg-purple"></div>
     <el-switch
-    v-model="domain.use"
+    v-model="item.is_use"
     on-color="#13ce66"
     off-color="#ff4949">
   </el-switch>
     </el-col>
     <el-col :span="2"><div class="grid-content bg-purple"></div>
-  <el-checkbox v-model="domain.required">必填</el-checkbox>
+  <el-checkbox v-model="item.required">必填</el-checkbox>
     </el-col>
     <el-col :span="5"><div class="grid-content bg-purple"></div>
-    <el-input v-model="domain.k"></el-input>
+    <el-input v-model="item.name"></el-input>
 
     </el-col>
     <!--<el-col :span="3"><div class="grid-content bg-purple"></div>-->
@@ -127,31 +127,31 @@
     <el-col :span="9"><div class="grid-content bg-purple"></div>
 
     <el-date-picker
-      v-model="domain.v"
-      v-if="domain.value_type=='time'"
+      v-model="item.value"
+      v-if="item.type=='time'"
       type="datetime"
       placeholder="选择日期时间"
       format="yyyy-MM-dd HH:mm:ss"
-      @change="setTime(domain)"
+      @change="setTime(item)"
       >
     </el-date-picker>
-<el-input v-model="domain.v" v-if="domain.value_type=='text'" ></el-input>
-<input type="file" @change.prevent="getFile($event, domain)"  multiple="multiple" v-if="domain.value_type=='file'">
+<el-input v-model="item.value" v-if="item.type!='file' && item.type!='time'" ></el-input>
+<input type="file" @change.prevent="getFile($event, item)"  multiple="multiple" v-if="item.type=='file'">
 
     </el-col>
     <el-col :span="2"><div class="grid-content bg-purple"></div>
 
-    <el-select v-model="domain.value_type" @change="clearValue(domain)">
+    <el-select v-model="item.type" @change="clearValue(item)">
         <el-option
-          v-for="item in value_type"
-          :key="item.index"
-          :value="item">
+          v-for="t in type"
+          :key="t.index"
+          :value="t">
         </el-option>
       </el-select>
 
     </el-col>
     <el-col :span="1"><div class="grid-content bg-purple"></div>
-    <el-button @click.prevent="removeDomain(domain)"><i class="el-icon-minus"></i></el-button>
+    <el-button @click.prevent="removeParam(item)"><i class="el-icon-minus"></i></el-button>
 
     </el-col>
   </el-row>
@@ -160,9 +160,9 @@
 
 
   <el-form-item>
-    <el-button @click="addDomain('text')"><i class="el-icon-plus"></i> text</el-button>
-    <el-button @click="addDomain('file')"><i class="el-icon-plus"></i> file</el-button>
-    <el-button @click="addDomain('time')"><i class="el-icon-plus"></i> time</el-button>
+    <el-button @click="addParam('text')"><i class="el-icon-plus"></i> text</el-button>
+    <el-button @click="addParam('file')"><i class="el-icon-plus"></i> file</el-button>
+    <el-button @click="addParam('time')"><i class="el-icon-plus"></i> time</el-button>
 
 
   </el-form-item>
@@ -364,8 +364,7 @@
     data () {
       return {
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
-        value_type: ['text', 'file', 'time'],
-        getParams: [],
+        type: ['text', 'file', 'time','varchar'],
         previewBox:false,
         previewLoading:false,
         Form: {
@@ -398,14 +397,14 @@
           if (valid) {
             let formData = new FormData()
             let form = this.Form
-            for (let index in form.dataList) {
-              let obj = form.dataList[index]
-              if (obj.value_type === 'file') {
-                for (let i = 0; i < obj.v.length; i++) {
-                  formData.append(obj.k, obj.v[i])
+            for (let index in this.currentApi.params) {
+              let obj = this.currentApi.params[index]
+              if (obj.type === 'file') {
+                for (let i = 0; i < obj.value.length; i++) {
+                  formData.append(obj.name, obj.value[i])
                 }
               } else {
-                formData.append(obj.k, obj.v)
+                formData.append(obj.name, obj.value)
               }
             }
             formData.append('request_uri', this.currentApi.path)
@@ -426,24 +425,24 @@
       resetForm (formName) {
         this.$refs[formName].resetFields()
       },
-      removeDomain (item) {
-        let index = this.Form.dataList.indexOf(item)
+      removeParam (item) {
+        let index = this.currentApi.params.indexOf(item)
         if (index !== -1) {
-          this.Form.dataList.splice(index, 1)
+          this.currentApi.params.splice(index, 1)
         }
       },
-      getFile (event, domain) {
-        let index = this.Form.dataList.indexOf(domain)
-        this.Form.dataList[index].v = event.target.files
+      getFile (event, item) {
+        let index = this.currentApi.params.indexOf(item)
+        this.currentApi.params[index].v = event.target.files
       },
       setTime (event) {
-        let index = this.Form.dataList.indexOf(event)
-        this.Form.dataList[index].v = event.v.toJSON()
+        let index = this.currentApi.params.indexOf(event)
+        this.currentApi.params[index].v = event.v.toJSON()
       },
-      clearValue (domain) {
-        console.log(domain)
-        let index = this.Form.dataList.indexOf(domain)
-        this.Form.dataList[index].v = ''
+      clearValue (item) {
+        console.log(item)
+        let index = this.currentApi.params.indexOf(item)
+        this.currentApi.params[index].v = ''
       },
       checkUriParams () {
         let uri = this.currentApi.path
@@ -466,13 +465,13 @@
         }
         this.uriParamsArr = paramArr
       },
-      addDomain (type) {
-        this.Form.dataList.push({
-          v: '',
-          k: '',
-          use: true,
+      addParam (type) {
+        this.currentApi.params.push({
+          value: '123',
+          name: '',
+          is_use: true,
           required: true,
-          value_type: type,
+          type: type,
           keyState: ''
         })
 //        console.log(this.Form)
@@ -500,7 +499,7 @@
                 uri:this.currentApi.path,
                 method: this.currentApi.method,
                 queryParam:this.uriParamsArr,
-                formParam: this.Form.dataList,
+                formParam: this.currentApi.params,
                 response:this.jsonData
           }
           let uri = getUri('doc','generate')
