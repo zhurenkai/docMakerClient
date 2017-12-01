@@ -91,7 +91,7 @@
 
 <el-form-item
   v-for="(item, index) in currentApi.params"
-  :key="item.name"
+  :key="item.id"
 
 >
   <el-row>
@@ -467,14 +467,13 @@
       },
       addParam (type) {
         this.currentApi.params.push({
-          value: '123',
+          value: '',
           name: '',
           is_use: true,
           required: true,
+          api_id: this.currentApi.id,
           type: type,
-          keyState: ''
         })
-//        console.log(this.Form)
       },
       changeParam (val) {
         this.uriParamsArr[val.index][val.attr] = val.value
@@ -558,6 +557,12 @@
         },
         saveApi(){
             let api = this.currentApi
+            let uri = getUri('api','resource')  + api.id
+            this.axios.put(uri,api).then((response)=>{
+                this.getApiData(response,'保存成功！')
+            },(response)=>{
+                this.$message.error('保存失败')
+            })
         }
     },
       created(){
@@ -566,7 +571,9 @@
       })
           if(default_host.length!=0){
               this.Form.request_host = default_host[0].name
-
+          }
+          if(!this.currentApi.method){
+              this.currentApi.method = 'GET'
           }
       }
 

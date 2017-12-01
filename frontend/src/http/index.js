@@ -2,7 +2,7 @@ import axios from 'axios'
 import router from '../router/index.js'
 
 axios.defaults.timeout = 5000;
-axios.defaults.baseURL = 'http://localhost:8080/';
+axios.defaults.baseURL = '';
 axios.interceptors.request.use(
     config => {
 let expire_time = localStorage.getItem('expire_time')

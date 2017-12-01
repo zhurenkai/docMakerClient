@@ -19,8 +19,9 @@
 
                         <el-menu-item style="padding-left: 0px; " :index="api.name" v-for="api,index in module.apis" :key="index"  @click="addTab(api.id)">
                             <el-row>
-                                <el-col :span="4">
-                                    <span class="request_method" :style="{ color: activeColor(api.method)}">{{ api.method }} </span>
+
+                            <el-col :span="4" class="request_method" :style="{ color: activeColor(api.method)}">
+                                    {{ api.method }}
                                 </el-col>
                                 <el-col :span="19">
                                     {{ api.name }}
@@ -34,9 +35,10 @@
     <el-button type="primary" @click="removeApi(project,module,api)">确 定</el-button>
   </span>
                                 </el-dialog>
-
                             </el-row>
+
                         </el-menu-item>
+
                         <el-menu-item index="0" style="padding-left: 50px" @click="addApi(project,module)"><i class="el-icon-plus"></i>接口</el-menu-item>
                     </el-submenu>
                     <el-menu-item index="0" style="padding-left: 50px" @click="addModule(project)"><i class="el-icon-plus"></i>模块</el-menu-item>
@@ -199,7 +201,6 @@
     .request_method{
         font-size: 7px;
         font-weight: 800;
-
     }
     .el-icon-circle-close{color: red}
 </style>
