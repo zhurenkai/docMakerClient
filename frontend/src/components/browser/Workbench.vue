@@ -74,105 +74,106 @@
                 @selfUpdate="changeParam"
     ></query-param>
 
-<!--<div v-for="param in currentApi.params">-->
-<!--<el-row>-->
-  <!--<el-col :span="3">-->
-    <!--<el-input v-model="param.name"></el-input>-->
-  <!--</el-col>-->
-  <!--<el-col :span="5">-->
-  <!--<el-input></el-input>-->
-  <!--</el-col>-->
+<el-row>
+    <el-col :span="24">
 
-  <!--<el-col :span="6">-->
-  <!--<el-input v-model="param.value"></el-input>-->
-  <!--</el-col>-->
-<!--</el-row>-->
-<!--</div>-->
+        <el-tabs v-model="bodyType" v-if="currentApi.method !='GET'">
+            <el-tab-pane label="form" name="form">
 
-<el-form-item
-  v-for="(item, index) in currentApi.params"
-  :key="item.id"
+                <el-form-item
+                        v-for="(item, index) in currentApi.params"
+                        :key="item.id"
 
->
-  <el-row>
-    <el-col :span="2"><div class="grid-content bg-purple"></div>
-    <el-switch
-    v-model="item.is_use"
-    on-color="#13ce66"
-    off-color="#ff4949">
-  </el-switch>
+                >
+                    <el-row>
+                        <el-col :span="2"><div class="grid-content bg-purple"></div>
+                            <el-switch
+                                    v-model="item.is_use"
+                                    on-color="#13ce66"
+                                    off-color="#ff4949">
+                            </el-switch>
+                        </el-col>
+                        <el-col :span="2"><div class="grid-content bg-purple"></div>
+                            <el-checkbox v-model="item.required">必填</el-checkbox>
+                        </el-col>
+                        <el-col :span="5"><div class="grid-content bg-purple"></div>
+                            <el-input v-model="item.name"></el-input>
+
+                        </el-col>
+
+                        <el-col :span="9"><div class="grid-content bg-purple"></div>
+
+                            <el-date-picker
+                                    v-model="item.value"
+                                    v-if="item.type=='time'"
+                                    type="datetime"
+                                    placeholder="选择日期时间"
+                                    format="yyyy-MM-dd HH:mm:ss"
+                                    @change="setTime(item)"
+                            >
+                            </el-date-picker>
+                            <el-input v-model="item.value" v-if="item.type!='file' && item.type!='time'" ></el-input>
+                            <input type="file" @change.prevent="getFile($event, item)"  multiple="multiple" v-if="item.type=='file'">
+
+                        </el-col>
+                        <el-col :span="2"><div class="grid-content bg-purple"></div>
+
+                            <el-select v-model="item.type" @change="clearValue(item)">
+                                <el-option
+                                        v-for="t in type"
+                                        :key="t.index"
+                                        :value="t">
+                                </el-option>
+                            </el-select>
+
+                        </el-col>
+                        <el-col :span="1"><div class="grid-content bg-purple"></div>
+                            <el-button @click.prevent="removeParam(item)"><i class="el-icon-minus"></i></el-button>
+
+                        </el-col>
+                    </el-row>
+
+                </el-form-item>
+                <el-form-item>
+                    <el-button @click="addParam('text')"><i class="el-icon-plus"></i> text</el-button>
+                    <el-button @click="addParam('file')"><i class="el-icon-plus"></i> file</el-button>
+                    <el-button @click="addParam('time')"><i class="el-icon-plus"></i> time</el-button>
+
+                </el-form-item>
+
+            </el-tab-pane>
+
+            <el-tab-pane label="json" name="json">
+
+                <el-input
+                        type="textarea"
+                        :rows="12"
+                        v-model="jsonInput">
+                </el-input>
+
+            </el-tab-pane>
+        </el-tabs>
+
+
     </el-col>
-    <el-col :span="2"><div class="grid-content bg-purple"></div>
-  <el-checkbox v-model="item.required">必填</el-checkbox>
-    </el-col>
-    <el-col :span="5"><div class="grid-content bg-purple"></div>
-    <el-input v-model="item.name"></el-input>
-
-    </el-col>
-    <!--<el-col :span="3"><div class="grid-content bg-purple"></div>-->
-
-    <!--<el-select-->
-  <!--v-model="domain.keyState"-->
-  <!--filterable-->
-  <!--allow-create-->
-  <!--&gt;-->
-  <!--<el-option-->
-    <!--v-for="item in getKeyState()"-->
-    <!--:key="item.index"-->
-    <!--:value="item">-->
-  <!--</el-option>-->
-<!--</el-select>-->
-
-    <!--</el-col>-->
-    <el-col :span="9"><div class="grid-content bg-purple"></div>
-
-    <el-date-picker
-      v-model="item.value"
-      v-if="item.type=='time'"
-      type="datetime"
-      placeholder="选择日期时间"
-      format="yyyy-MM-dd HH:mm:ss"
-      @change="setTime(item)"
-      >
-    </el-date-picker>
-<el-input v-model="item.value" v-if="item.type!='file' && item.type!='time'" ></el-input>
-<input type="file" @change.prevent="getFile($event, item)"  multiple="multiple" v-if="item.type=='file'">
-
-    </el-col>
-    <el-col :span="2"><div class="grid-content bg-purple"></div>
-
-    <el-select v-model="item.type" @change="clearValue(item)">
-        <el-option
-          v-for="t in type"
-          :key="t.index"
-          :value="t">
-        </el-option>
-      </el-select>
-
-    </el-col>
-    <el-col :span="1"><div class="grid-content bg-purple"></div>
-    <el-button @click.prevent="removeParam(item)"><i class="el-icon-minus"></i></el-button>
-
-    </el-col>
-  </el-row>
-
-</el-form-item>
+</el-row>
 
 
-  <el-form-item>
-    <el-button @click="addParam('text')"><i class="el-icon-plus"></i> text</el-button>
-    <el-button @click="addParam('file')"><i class="el-icon-plus"></i> file</el-button>
-    <el-button @click="addParam('time')"><i class="el-icon-plus"></i> time</el-button>
 
 
-  </el-form-item>
+
 </el-form>
 </div></el-col>
 
 </el-row>
-<el-col v-loading="request_loading" v-if="jsonData">
-    <html-json  :jsonObj="jsonData" class="json-data" ></html-json>
-</el-col>
+
+
+    <el-col v-if="jsonData">
+        <vue-json-pretty id="vue-json-pretty"
+                :data="jsonData"
+                >
+        </vue-json-pretty>
+    </el-col>
 
 
     <el-dialog  title="文档预览" :visible.sync="previewBox">
@@ -346,14 +347,13 @@
 
 <script type="text/ecmascript-6">
   import QueryParam from './QueryParam.vue'
-  import VueHtmlJson from 'vue-html-json'
   import {getUri} from '../../config/config.js'
   import Markdown from '../doc/Markdown.vue'
   import {mapState} from 'vuex'
-//  import {stringify} from 'json-stable-stringify'
+  import VueJsonPretty from 'vue-json-pretty'
   export default {
   components: {
-      QueryParam, [VueHtmlJson.name]: VueHtmlJson, Markdown
+      QueryParam,  Markdown , VueJsonPretty
   },
       computed:{
 
@@ -371,6 +371,8 @@
           dataList: [],
           request_host: ''
         },
+        jsonInput:'',
+        bodyType:'form',
         currentApi:this.api,
         uriParamsArr: {},
         searchQuery: '',
@@ -395,24 +397,41 @@
         this.request_loading = true
         this.$refs[event].validate((valid) => {
           if (valid) {
-            let formData = new FormData()
-            let form = this.Form
-            for (let index in this.currentApi.params) {
-              let obj = this.currentApi.params[index]
-              if (obj.type === 'file') {
-                for (let i = 0; i < obj.value.length; i++) {
-                  formData.append(obj.name, obj.value[i])
-                }
-              } else {
-                formData.append(obj.name, obj.value)
+              if(this.bodyType=='form'){
+                  var data = new FormData()
+                  let form = this.Form
+                  for (let index in this.currentApi.params) {
+                      let obj = this.currentApi.params[index]
+                      if (obj.type === 'file') {
+                          for (let i = 0; i < obj.value.length; i++) {
+                              data.append(obj.name, obj.value[i])
+                          }
+                      } else {
+                          data.append(obj.name, obj.value)
+                      }
+                  }
+                  data.append('request_uri', this.currentApi.path)
+                  data.append('request_host', this.Form.request_host)
+                  data.append('request_method', this.currentApi.method)
+                  var options = {}
+              }else{
+                      try{
+                          let jsonInput = this.jsonInput?this.jsonInput:'{}'
+                          var data = JSON.parse(jsonInput)
+                      }catch(e) {
+                          this.$message.error(e.message)
+                          return
+                      }
+
+                  data.request_uri = this.currentApi.path
+                  data.request_host = this.Form.request_host
+                  data.request_method = this.currentApi.method
+                  var options = {headers:{'Content-Type':'application/json'}}
               }
-            }
-            formData.append('request_uri', this.currentApi.path)
-            formData.append('request_host', this.Form.request_host)
-            formData.append('request_method', this.currentApi.method)
-            this.$http.post('client-api/client/request', formData).then((response) => {
+
+            this.axios.post('client-api/client/request', data,options).then((response) => {
               this.request_loading = false
-              this.jsonData = response.body
+              this.jsonData = response.data
             }, (response) => {
                 this.$message.error('请求出错')
             })
@@ -520,6 +539,7 @@
             let data = this.document
             this.axios.post(uri,data).then((response)=>{
                 this.$message.success(response.data.data)
+                this.getApiData(response)
             },(response)=>{
                 this.$message.error('保存失败！')
             })
@@ -536,7 +556,7 @@
                     + '>'+ this.currentApi.description +'\n\n'
             +'**请求参数说明**\n\n'
             +'|参数|说明|类型|必填|备注| \n |---|---|---|---|---| \n'
-            console.log(this.currentApi.name)
+            console.log(this.currentApi.response)
                 this.document.params.forEach((param)=>{
                 text += '|'+param.key+ '|'+ param.statement+'|' + param.type +'|' + param.required +'|\n'
                 })
@@ -581,7 +601,7 @@
   }
 </script>
 <style scoped>
-    .json-data{text-align: left}
+    #vue-json-pretty{text-align: left}
     .host-select{
         width: 210px;
     }

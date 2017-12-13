@@ -19,8 +19,17 @@ const routes = [
       component: Authlogin
     },
     {
+      path: '/settings',
+      name: 'Settings',
+      components: {
+        default: require('../components/browser/Tabs'),
+          left_menu:require('../components/layouts/LeftMenu'),
+          top_menu:require('../components/layouts/TopMenu'),
+      }
+    },
+    {
       path: '/workbench',
-      name: 'Workbentch',
+      name: 'Workbench',
       components: {
         default:require('../components/browser/Tabs'),
           left_menu:require('../components/layouts/LeftMenu'),

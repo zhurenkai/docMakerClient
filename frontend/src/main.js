@@ -14,9 +14,9 @@ import VueClipboard from 'vue-clipboard2'
 import helper from './helper'
 
 Vue.use(helper)
+// 剪切板
 Vue.use(VueClipboard)
 Vue.use(VueResource)
-// install N3
 Vue.use(ElementUI)
 Vue.prototype.axios = axios
 // for English  (default chinese)

@@ -28,17 +28,16 @@ class client extends Controller
         $url = $host.$uri;
         unset($this->in['request_uri']);
         unset($this->in['request_host']);
-        unset($this->in['request_request_method']);
+        unset($this->in['request_method']);
         $client = new GClient;
         $header = $this->getHeader($_SERVER);
         // 处理带图片的
         if ($files = $_FILES) {
            $params = $this->multipartParam($this->in,$files);
         }
-        // 处理json
+        // json
         if($_SERVER['CONTENT_TYPE']=='application/json'){
-            $json_param = file_get_contents('php://input');
-            $params = $this->jsonParam($json_param);
+            $params['json'] = $this->in;
         }
         // 默认
         if(!isset($params)){
@@ -64,10 +63,7 @@ class client extends Controller
         return $header;
     }
 
-    private function jsonParam($json){
-        $params['json'] = json_decode($json);
-        return $params;
-    }
+
 
     private function multipartParam($files,$in)
     {
