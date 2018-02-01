@@ -35,21 +35,18 @@
                     grant_type: 'password',
                     client_id: 2,
                     client_secret: 'jaRRCCNvPujoAM8cgLv4rjbpnmjmGfETze6CE1Ir',
-
                 }
             }
         },
         methods: {
             onSubmit() {
-                this.$http.post('/api/oauth/token',this.form).then(function (response) {
-
+                this.axios.post('/api/oauth/token',this.form).then( (response)=> {
                     // 记录token
                     localStorage.setItem('access_token',response.data.access_token)
                     localStorage.setItem('token_type',response.data.token_type)
                     localStorage.setItem('refresh_token',response.data.refresh_token)
                     let expire_time =Math.round(new  Date().getTime()/1000) + response.data.expires_in
                     localStorage.setItem('expire_time',expire_time)
-
                     // 记录用户信息
                     this.axios.get('api/api/user-info').then((response)=>{
                        let  user = response.data.data

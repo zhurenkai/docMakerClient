@@ -8,19 +8,6 @@
   <el-input  placeholder="请输入内容" v-model="k_pointer" @change="param_bind_change('k_pointer', 'key')"></el-input>
     </el-col>
 
-      <!--<el-col :span="4">-->
-  <!--<el-select-->
-          <!--v-model="key_state_pointer"-->
-          <!--filterable-->
-          <!--allow-create-->
-  <!--&gt;-->
-    <!--<el-option-->
-            <!--v-for="item in keyState"-->
-            <!--:key="item.index"-->
-            <!--:value="item">-->
-    <!--</el-option>-->
-  <!--</el-select>-->
-      <!--</el-col>-->
     <el-col :span="9">
 
     <el-input  placeholder="请输入内容" v-model="v_pointer" @change="param_bind_change('v_pointer', 'value')"></el-input>
@@ -65,7 +52,6 @@
       param_bind_change: function (attr, prop) {
         this.$emit('param_bind_change')
         let change = {'index': this.index, 'attr': prop, 'value': this[attr]}
-        console.log(this.index)
         this.$emit('selfUpdate', change)
       }
     }

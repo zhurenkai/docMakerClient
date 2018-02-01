@@ -3,7 +3,7 @@
 <el-row>
     <el-col :span="24">
 
-        <el-tabs :value="activeApi" type="border-card" closable @tab-remove="removeTab">
+        <el-tabs :value="activeApi" type="border-card" closable @tab-remove="removeTab" style="height: 988px">
             <el-tab-pane
                     v-for="(item, index) in apiList"
                     :key="item.name"
@@ -53,3 +53,7 @@
 }
 
 </script>
+
+<style>
+
+</style>

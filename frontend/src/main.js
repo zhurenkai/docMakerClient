@@ -4,19 +4,17 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-default/index.css'
-import VueResource from 'vue-resource'
+import 'element-ui/lib/theme-chalk/index.css'
 import axios from './http'
 import {getUri} from './config/config.js'
 import Vuex from 'vuex'
 import store from './store'
 import VueClipboard from 'vue-clipboard2'
 import helper from './helper'
-
+import '../theme/index.css'
 Vue.use(helper)
 // 剪切板
 Vue.use(VueClipboard)
-Vue.use(VueResource)
 Vue.use(ElementUI)
 Vue.prototype.axios = axios
 // for English  (default chinese)

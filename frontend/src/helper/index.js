@@ -9,5 +9,5 @@ exports.install = function (Vue, options) {
             }
             return response.data.data
         }
-    };
-};
+    }
+}

@@ -5,7 +5,6 @@ use GuzzleHttp\Client as GClient;
 
 class client extends Controller
 {
-    private $request_method;
     public function __construct()
     {
         parent::__construct();
@@ -29,23 +28,27 @@ class client extends Controller
         unset($this->in['request_uri']);
         unset($this->in['request_host']);
         unset($this->in['request_method']);
+        $headers_str = $this->in['request_headers'] ?? null;
+        if($headers_str){
+            $headers = json_decode($headers_str,1);
+        }
         $client = new GClient;
-        $header = $this->getHeader($_SERVER);
         // 处理带图片的
         if ($files = $_FILES) {
            $params = $this->multipartParam($this->in,$files);
         }
         // json
-        if($_SERVER['CONTENT_TYPE']=='application/json'){
-            $params['json'] = $this->in;
+        if(isset($this->in['json_input'])){
+            $params['json'] = json_decode($this->in['json_input'],1);
         }
         // 默认
         if(!isset($params)){
             $params['form_params'] = $this->in;
         }
-        $params['headers'] = $header;
+        if(isset($headers)){
+            $params['headers'] = $headers;
+        }
             $res = $client->request($request_method, $url, $params);
-
         echo  $res->getBody() ;
     }
 
