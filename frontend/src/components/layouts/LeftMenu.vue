@@ -11,6 +11,7 @@
                  background-color="#24292E"
                  text-color="#fff"
                  active-text-color="#fff"
+                 ref="menu"
         >
 
             <el-submenu index="/workbench">
@@ -213,7 +214,7 @@
         })
       },
       link(path){
-
+        this.$refs.menu.close('/workbench')
         this.$router.push({ path })
       },
       handelOpen(path){

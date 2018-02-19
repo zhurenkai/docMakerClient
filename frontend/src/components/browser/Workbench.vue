@@ -70,7 +70,7 @@
                                 <el-button @click="saveApi">save</el-button>
                             </el-col>
                             <el-col :span="2">
-                                <el-button @click="createDocument()">生成文档</el-button>
+                                <el-button @click="previewBox = true">查看文档</el-button>
                             </el-col>
                         </el-row>
 
@@ -90,7 +90,9 @@
 
                                 <el-tabs v-model="tabSelected">
                                     <el-tab-pane label="form" name="form" :disabled="currentApi.method ==='GET'">
-                                <span slot="label"><el-radio :disabled="currentApi.method ==='GET'" v-model="bodyType" label="form">form</el-radio></span>
+                                        <span slot="label"><el-radio :disabled="currentApi.method ==='GET'"
+                                                                     v-model="bodyType"
+                                                                     label="form">form</el-radio></span>
                                         <el-form-item
                                                 v-for="(item, index) in currentApi.params"
                                                 :key="item.id"
@@ -168,7 +170,8 @@
 
                                     <el-tab-pane label="json" name="json" :disabled="currentApi.method ==='GET'">
                                        <span slot="label">
-                                           <el-radio :disabled="currentApi.method ==='GET'" v-model="bodyType" label="json" @change="bodyTypeChange">json</el-radio>
+                                           <el-radio :disabled="currentApi.method ==='GET'" v-model="bodyType"
+                                                     label="json" @change="bodyTypeChange">json</el-radio>
                                        </span>
                                         <el-input
                                                 type="textarea"
@@ -179,7 +182,7 @@
                                         </el-input>
 
                                     </el-tab-pane>
-                                    <el-tab-pane  name="headers">
+                                    <el-tab-pane name="headers">
                                         <span slot="label">headers({{headers.length}})</span>
                                         <el-row v-for="header,index in headers" :key="index">
                                             <el-col :span="10">
@@ -218,14 +221,19 @@
         </el-col>
 
 
-        <el-dialog title="文档预览" :visible.sync="previewBox">
+        <el-dialog title="文档" :visible.sync="previewBox">
 
             <div v-if="!docShowType">
+                <el-row >
+                    <el-col >
+                    <el-button type="warning" @click="createDocument">重新生成 <i class="el-icon-refresh"></i></el-button>
+                    </el-col>
+                </el-row>
                 <el-row :gutter="20" style="text-align: left ;font-size: large">
                     <el-col :span="2" size="large">
                         <el-tag>{{ currentApi.method }}</el-tag>
                     </el-col>
-                    <el-col :span="22"><span style="color:red">{host}</span> {{ currentApi.path }}</el-col>
+                    <el-col :span="22"><span style="color:red;font-size: 17px">{host}</span><span style="color: #ccc;font-size: 17px">{{ currentApi.path }}</span> </el-col>
                 </el-row>
 
                 <!--参数说明-->
@@ -369,20 +377,20 @@
             </el-row>
             <!--<el-row>-->
 
-                <!--<el-col :span="4" :offset="20" style=" background: #d3dce6; on-hover:pointer">-->
-                <!--<span v-clipboard:copy="commentaries"-->
-                      <!--v-clipboard:success="onCopy" style="cursor:pointer"-->
-                <!--&gt;复制到剪切板</span></el-col>-->
+            <!--<el-col :span="4" :offset="20" style=" background: #d3dce6; on-hover:pointer">-->
+            <!--<span v-clipboard:copy="commentaries"-->
+            <!--v-clipboard:success="onCopy" style="cursor:pointer"-->
+            <!--&gt;复制到剪切板</span></el-col>-->
             <!--</el-row>-->
             <!--<el-row>-->
-                <!--<el-col style="text-align: left;font-size: large">-->
-                    <!--<el-input-->
-                            <!--type="textarea"-->
-                            <!--autosize-->
-                            <!--placeholder="请输入内容"-->
-                            <!--v-model="commentaries">-->
-                    <!--</el-input>-->
-                <!--</el-col>-->
+            <!--<el-col style="text-align: left;font-size: large">-->
+            <!--<el-input-->
+            <!--type="textarea"-->
+            <!--autosize-->
+            <!--placeholder="请输入内容"-->
+            <!--v-model="commentaries">-->
+            <!--</el-input>-->
+            <!--</el-col>-->
             <!--</el-row>-->
 
 
@@ -419,7 +427,7 @@
         },
         headers: [],
         tabSelected: 'form',
-        bodyType:'form',
+        bodyType: 'form',
         currentApi: this.api,
         uriParamsArr: {},
         searchQuery: '',
@@ -441,22 +449,21 @@
         })
       },
       bodyTypeChange (type){
-        if(type !=='json'){
+        if (type !== 'json') {
           return
         }
-       let  exists = this.headers.filter((item)=>{
-          return item.key == 'Content-Type' && item.value =='application/json'
+        let exists = this.headers.filter((item) => {
+          return item.key == 'Content-Type' && item.value == 'application/json'
         })
-        if(exists.length ===0){
-         this.headers.push({key:'Content-Type',value:'application/json'})
+        if (exists.length === 0) {
+          this.headers.push({key: 'Content-Type', value: 'application/json'})
         }
       },
       changeHost (name) {
-        let host = this.currentApi.hosts.filter((v)=>{
+        let host = this.currentApi.hosts.filter((v) => {
           return v.name === name
         })
-        if(host.length === 1)
-        {
+        if (host.length === 1) {
           this.headers = host[0].headers
         }
       },
@@ -485,15 +492,16 @@
               data.append('request_headers', request_headers)
             }
             else {
-                var data = {
-               request_uri : this.currentApi.path,
-              request_host : this.currentApi.host,
-               request_method : this.currentApi.method,
-               request_headers : request_headers,
-              json_input : this.currentApi.json_input }
+              var data = {
+                request_uri: this.currentApi.path,
+                request_host: this.currentApi.host,
+                request_method: this.currentApi.method,
+                request_headers: request_headers,
+                json_input: this.currentApi.json_input
+              }
             }
-            let option = {headers:{'Content-Type': 'application/json'}}
-            this.axios.post('client-api/client/request', data,option).then((response) => {
+            let option = {headers: {'Content-Type': 'application/json'}}
+            this.axios.post('client-api/client/request', data, option).then((response) => {
               this.request_loading = false
               this.jsonData = response.data
             }, (response) => {
@@ -603,6 +611,7 @@
       saveDoc(){
         let uri = getUri('doc', 'resource')
         let data = this.document
+        data.api_id = this.currentApi.id
         this.axios.post(uri, data).then((response) => {
           this.$message.success(response.data.data)
           this.getApiData(response)
@@ -611,7 +620,7 @@
         })
       },
       generateDoc(value){
-        if (value == 'markdown') {
+        if (value === 'markdown') {
           this.markdownDoc = this.generateMarkdown()
         }
       },
@@ -643,44 +652,43 @@
         }, (response) => {
           this.$message.error('保存失败')
         })
-
-        let host = this.currentApi.hosts.filter((v)=>{
+        let host = this.currentApi.hosts.filter((v) => {
           return v.name === this.currentApi.host
         })
-        if(host.length ===1) {
+        if (host.length === 1) {
           let h = host.pop()
           h.headers = JSON.stringify(this.headers)
-          let uri = getUri('host','resource') + h.id
-          this.axios.patch(uri,h).then((response)=>{
+          let uri = getUri('host', 'resource') + h.id
+          this.axios.patch(uri, h).then((response) => {
             this.getApiData(response)
-          },(response)=>{
-
+          }, (response) => {
           })
         }
       },
       headerToStr () {
         let headers = {}
-        this.headers.forEach((v)=>{
+        this.headers.forEach((v) => {
           headers[v.key] = v.value
         })
-        return  JSON.stringify(headers)
+        return JSON.stringify(headers)
       },
       prettyInput(){
         let jsonObj
-        if(this.currentApi.json_input.trim() === ''){
+        if (this.currentApi.json_input.trim() === '' || this.currentApi.json_input === null) {
           return
         }
         try {
-           jsonObj = JSON.parse(this.currentApi.json_input)
+          jsonObj = JSON.parse(this.currentApi.json_input)
         }
         catch (e) {
           this.$message.error('json字符串格式有误')
           return
         }
         let jsonPretty = stringify(jsonObj, {space: ' '})
-        if(jsonPretty){
-          this.currentApi.json_input =jsonPretty
-        }else{
+        if (jsonPretty) {
+          this.currentApi.json_input = jsonPretty
+        }
+        else {
           this.currentApi.json_input = ''
         }
       }
@@ -693,10 +701,14 @@
         this.tabSelected = 'json'
         this.bodyType = 'json'
       }
-      if(this.currentApi.method === 'GET'){
+      if (this.currentApi.method === 'GET') {
         this.tabSelected = 'headers'
       }
       this.changeHost(this.currentApi.host)
+      if(this.currentApi.document){
+        this.document = this.currentApi.document
+      }
+
     }
   }
 </script>

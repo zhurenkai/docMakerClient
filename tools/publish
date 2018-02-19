@@ -1,0 +1,28 @@
+#!/bin/bash
+
+getopts b build
+cd ../frontend
+
+if [ $build == b ]
+
+then
+
+echo "正在编译"
+npm run build
+
+fi
+
+echo "正在打包压缩dist"
+zip -q -r dist.zip dist
+echo "正在上传"
+scp dist.zip root@182.254.146.173:/home/www/docMakerClient
+echo "上传完成"
+rm dist.zip
+cd ..
+echo "正在压缩backend"
+zip -q -r backend.zip backend
+echo "正在上传"
+scp backend.zip root@182.254.146.173:/home/www/docMakerClient
+echo "上传完成"
+rm  backend.zip
+echo "完成"

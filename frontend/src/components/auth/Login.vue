@@ -53,6 +53,7 @@
                         localStorage.setItem('user_id',user.id)
                         localStorage.setItem('user_name',user.name)
                         localStorage.setItem('user_email',user.email)
+                      this.$store.commit('userInfo', user);
                         let redirect = decodeURIComponent(this.$route.query.redirect || '/');
                           this.$router.push({path: redirect})
                     }).catch((response)=>{

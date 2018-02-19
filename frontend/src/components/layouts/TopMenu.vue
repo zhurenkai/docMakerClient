@@ -4,15 +4,24 @@
     <el-row>
         <el-col :span="10" :offset="5"><span class="title">文档制造机</span></el-col>
         <el-col :span="2" :offset="5"> <i class="el-icon-setting title"></i></el-col>
-        <el-col :span="2" ><span class="user">朱仁凯</span></el-col>
+        <el-col :span="2" ><span class="user">{{userInfo.name}}</span></el-col>
     </el-row>
 
     </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import {mapState} from 'vuex'
     export default{
-
+      computed:{
+        ...mapState({
+          userInfo: state => state.userInfo
+        }),
+        userInfo(){
+          console.log(this.$store.state.userInfo)
+          return this.$store.state.userInfo
+        }
+      }
     }
 </script>
 <style>

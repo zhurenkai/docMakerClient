@@ -35,7 +35,6 @@
      methods:{
          removeTab(index){
             this.$store.commit('removeTab',index)
-             console.log(index)
          }
      },
     computed:{

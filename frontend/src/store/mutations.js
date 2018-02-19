@@ -23,5 +23,8 @@ export default {
 
             state.activeApi = String(state.activeApi-1)
         }
-    }
+    },
+  userInfo (state,userInfo) {
+        state.userInfo = userInfo
+  }
 }
