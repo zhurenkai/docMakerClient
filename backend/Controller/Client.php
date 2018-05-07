@@ -48,7 +48,12 @@ class client extends Controller
         if(isset($headers)){
             $params['headers'] = $headers;
         }
+        try{
             $res = $client->request($request_method, $url, $params);
+        }catch(Exception $e){
+            echo $e->getCode().' '.$e->getMessage();
+            exit;
+        }
         echo  $res->getBody() ;
     }
 

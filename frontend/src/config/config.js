@@ -19,7 +19,8 @@ const constant = {
   },
   doc: {
     generate: 'doc/generate',
-    resource: 'document'
+    resource: 'document',
+    markdown: 'doc/markdown'
   },
   project_host: {
     resource: 'project-host/'

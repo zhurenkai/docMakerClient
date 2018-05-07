@@ -226,7 +226,7 @@
             <div v-if="!docShowType">
                 <el-row >
                     <el-col >
-                    <el-button type="warning" @click="createDocument">重新生成 <i class="el-icon-refresh"></i></el-button>
+                    <el-button type="warning" @click="createDocument">{{document.response ? '重新生成':'生成'}} <i class="el-icon-refresh"></i></el-button>
                     </el-col>
                 </el-row>
                 <el-row :gutter="20" style="text-align: left ;font-size: large">
@@ -373,6 +373,7 @@
                     </el-select>
 
                     <el-button type="primary" @click="saveDoc">保存</el-button>
+                    <el-button type="danger" @click="previewBox = false">关闭</el-button>
                 </el-col>
             </el-row>
             <!--<el-row>-->
@@ -468,6 +469,7 @@
         }
       },
       submitForm (event) {
+        this.jsonData = ''
         this.request_loading = true
         this.$refs[event].validate((valid) => {
           if (valid) {
@@ -608,12 +610,32 @@
           this.$message.error('生成出错')
         })
       },
-      saveDoc(){
+      saveDoc () {
+        if (this.docShowType === 'markdown') {
+          this.saveMarkdown()
+        }else{
+          this.saveDocCommon()
+        }
+      },
+      saveMarkdown(){
+        let uri = getUri('doc','markdown')
+        let data = {
+          api_id:this.currentApi.id,
+          content:this.markdownDoc
+        }
+        this.axios.post(uri,data).then(response=>{
+          this.getApiData(response)
+          this.$message.success('保存成功!')
+        },response=>{
+          this.$message.error('保存失败！')
+        })
+      },
+      saveDocCommon(){
         let uri = getUri('doc', 'resource')
         let data = this.document
         data.api_id = this.currentApi.id
         this.axios.post(uri, data).then((response) => {
-          this.$message.success(response.data.data)
+          this.$message.success('保存成功!')
           this.getApiData(response)
         }, (response) => {
           this.$message.error('保存失败！')
@@ -632,6 +654,14 @@
         this.document.params.forEach((param) => {
           text += '|' + param.key + '|' + param.statement + '|' + param.type + '|' + param.required + '|\n'
         })
+
+        if(this.currentApi.json_input){
+          text += '\n **请求示例**\n\n'
+          + '```\n'
+              + this.currentApi.json_input
+          + '```\n'
+
+        }
         text += '\n **返回参数说明**\n\n'
           + '|参数|说明|类型|备注| \n |---|---|---|---| \n'
         if (this.document.response) {
