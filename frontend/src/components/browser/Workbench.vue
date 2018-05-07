@@ -404,7 +404,7 @@
 
 <script type="text/ecmascript-6">
   import QueryParam from './QueryParam.vue'
-  import { getUri } from '../../config/config.js'
+  import { getUri } from '../../config'
   import Markdown from '../doc/Markdown.vue'
   import { mapState } from 'vuex'
   import VueJsonPretty from 'vue-json-pretty'

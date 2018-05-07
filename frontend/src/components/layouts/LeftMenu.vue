@@ -99,7 +99,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { getUri } from '../../config/config.js'
+  import { getUri } from '../../config'
   export default{
     data: function () {
       return {

@@ -1,6 +1,6 @@
 const proxy_domain = 'api/'
 const prefix = 'api/'
-export const getUri = (type,key ) =>
+const getUri = (type,key ) =>
 {
     return proxy_domain + prefix + constant[type][key]
 }
@@ -29,3 +29,11 @@ const constant = {
     resource: 'host/'
   }
 }
+
+const client =  {
+  grant_type: 'password',
+  id: 2,
+  secret: 'zJ2CaOV4otIbAXig6GLoIlTZ7Y7mnM1PEga74W0Z'
+}
+
+export {client, getUri}

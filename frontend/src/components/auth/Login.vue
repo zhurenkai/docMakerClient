@@ -26,15 +26,16 @@
 </template>
 
 <script type="text/ecmascript-6">
+    import { client } from '../../config'
     export default {
         data() {
             return {
                 form: {
                     username: 'zhurkai@163.com',
                     password: '123456',
-                    grant_type: 'password',
-                    client_id: 2,
-                    client_secret: 'jaRRCCNvPujoAM8cgLv4rjbpnmjmGfETze6CE1Ir',
+                    grant_type: client.grant_type,
+                    client_id: client.id,
+                    client_secret: client.secret,
                 }
             }
         },
