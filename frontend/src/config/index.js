@@ -27,6 +27,9 @@ const constant = {
   },
   host:{
     resource: 'host/'
+  },
+  user: {
+    info: 'user-info'
   }
 }
 

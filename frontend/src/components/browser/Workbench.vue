@@ -349,6 +349,7 @@
             <markdown
                     v-if="docShowType=='markdown'"
                     :content="markdownDoc"
+                    ref="markdownEditor"
             ></markdown>
 
             <!--注释-->
@@ -619,9 +620,10 @@
       },
       saveMarkdown(){
         let uri = getUri('doc','markdown')
+        let content = this.$refs.markdownEditor.getContent()
         let data = {
           api_id:this.currentApi.id,
-          content:this.markdownDoc
+          content:content
         }
         this.axios.post(uri,data).then(response=>{
           this.getApiData(response)

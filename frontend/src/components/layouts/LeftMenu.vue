@@ -162,16 +162,19 @@
         console.log(this.removeIndex)
       },
       addProject(){
+        this.form = {}
         this.addBox = true
         this.uri = getUri('project', 'user_project')
       },
       addModule(project){
+        this.form = {}
         this.form.project_id = project.id
         this.addBox = true
         this.uri = getUri('module', 'resource')
         this.pushIndex.project = this.projects.indexOf(project)
       },
       addApi(project, module){
+        this.form = {}
         this.form.project_id = project.id
         this.form.module_id = module.id
         this.addBox = true

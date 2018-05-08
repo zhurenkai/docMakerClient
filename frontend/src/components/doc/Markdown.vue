@@ -1,6 +1,6 @@
 <template>
     <div id="markdown">
-        <mavon-editor :ishljs = "true" :value="content" ></mavon-editor>
+        <mavon-editor :ishljs = "true" :value="c" @change="changed"></mavon-editor>
     </div>
 </template>
 
@@ -11,11 +11,20 @@
         name: 'Markdown',
         data () {
             return {
+              c: this.content
             }
         },
         props:{
             content: String
         },
+      methods:{
+          getContent () {
+            return this.c
+          },
+        changed (content) {
+            this.c = content
+        }
+      },
         components:{mavonEditor}
     }
 </script>
