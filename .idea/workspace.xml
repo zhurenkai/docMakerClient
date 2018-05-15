@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2aa177e9-ec09-4fbc-b21d-43e1a269fd61" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tools/publish" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/frontend/src/components/auth/Login.vue" afterPath="$PROJECT_DIR$/frontend/src/components/auth/Login.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/frontend/src/components/browser/Workbench.vue" afterPath="$PROJECT_DIR$/frontend/src/components/browser/Workbench.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/frontend/src/components/layouts/TopMenu.vue" afterPath="$PROJECT_DIR$/frontend/src/components/layouts/TopMenu.vue" />
     </list>
     <ignored path="client.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -215,6 +211,16 @@
               <option name="myItemId" value="docMakerClient" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="docMakerClient" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="docMakerClient" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="frontend" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
@@ -383,16 +389,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="auth" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="docMakerClient" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="docMakerClient" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -594,12 +590,12 @@
       <workItem from="1526216593853" duration="386000" />
       <workItem from="1526219556586" duration="915000" />
       <workItem from="1526220533544" duration="637000" />
-      <workItem from="1526396847802" duration="3568000" />
+      <workItem from="1526396847802" duration="4174000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="463761000" />
+    <option name="totallyTimeSpent" value="464367000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="24" width="1855" height="1056" extended-state="6" />
