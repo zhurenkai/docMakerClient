@@ -55,7 +55,7 @@
                         localStorage.setItem('user_name',user.name)
                         localStorage.setItem('user_email',user.email)
                       this.$store.commit('userInfo', user);
-                        let redirect = decodeURIComponent(this.$route.query.redirect || '/');
+                        let redirect = decodeURIComponent(this.$route.query.redirect || '/workbench');
                           this.$router.push({path: redirect})
                     }).catch((response)=>{
                         this.$message.error('获取用户信息失败')

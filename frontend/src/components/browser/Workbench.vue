@@ -282,7 +282,7 @@
                             width="180">
                         <template slot-scope="scope">
 
-                            <span style="margin-left: 10px">{{ scope.row.type }}</span>
+                            <span class="typeState" style="margin-left: 10px" @click="scope.row.type = changeType(scope.row.type)">{{ scope.row.type }}</span>
                         </template>
                     </el-table-column>
 
@@ -315,7 +315,7 @@
                             label="类型"
                             width="180">
                         <template slot-scope="scope">
-                            {{ scope.row.type }}
+                          <span class="typeState"  @click="scope.row.type = changeType(scope.row.type)" >{{ scope.row.type }}</span>
 
                         </template>
                     </el-table-column>
@@ -444,6 +444,12 @@
       }
     },
     methods: {
+      changeType (type){
+        let list = ['string','integer','array','object','float','boolean']
+        let index = list.indexOf(type)
+        let next = index + 1 < list.length  ? index + 1 : 0
+        return list[next]
+      },
       onCopy: function (e) {
         this.$message({
           message: '复制成功',
@@ -635,6 +641,22 @@
       saveDocCommon(){
         let uri = getUri('doc', 'resource')
         let data = this.document
+        let notStated = data.response.filter(v=>{
+         return v.statement == ''
+        })
+
+        if (notStated.length != 0){
+          this.$message.error(notStated[0].key + ' 的描述不能为空，请重新填写选择')
+          return
+        }
+         notStated = data.params.filter(v=>{
+          return v.statement == ''
+        })
+        console.log(notStated)
+        if (notStated.length != 0){
+          this.$message.error(notStated[0].key + ' 的描述不能为空，请重新填写选择')
+          return
+        }
         data.api_id = this.currentApi.id
         this.axios.post(uri, data).then((response) => {
           this.$message.success('保存成功!')
@@ -748,7 +770,9 @@
     #vue-json-pretty {
         text-align: left
     }
-
+.typeState{
+    cursor: pointer;
+}
     .host-select {
         width: 210px;
     }

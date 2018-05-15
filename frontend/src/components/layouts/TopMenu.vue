@@ -8,13 +8,16 @@
                 text-color="#fff"
                 menu-trigger="click"
                 active-text-color="#ffd04b">
-            <el-menu-item index="1">处理中心</el-menu-item>
-            <el-submenu index="2">
-                <template slot="title">{{user.name}}</template>
-                <el-menu-item index="2-1" @click="logout">退出</el-menu-item>
+            <el-row>
+                <el-col :offset="20">
+                    <el-submenu index="2">
+                        <template slot="title">{{user.name}}</template>
+                        <el-menu-item index="2-1" @click="logout">退出</el-menu-item>
+                    </el-submenu>
 
+                </el-col>
+            </el-row>
 
-            </el-submenu>
             </el-menu>
 
     </div>
