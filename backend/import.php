@@ -33,7 +33,7 @@ while($row = $res->fetch(PDO::FETCH_ASSOC)){
     ];
 }
 $client = new Client(['headers'=>['Content-Type'=>'application/json','Accept' => 'application/json',
-                'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImFiOGJjMmVhYTJlYWNiNWE0OTAwNWFjYWQ0OGVhNGEzZjZkMmM1YTc4Y2JiNzQ2ZDc0NzE4ZjNmZGIxNzUwYzExMDhlZmQwYWQ3MWVmY2Q1In0.eyJhdWQiOiIyIiwianRpIjoiYWI4YmMyZWFhMmVhY2I1YTQ5MDA1YWNhZDQ4ZWE0YTNmNmQyYzVhNzhjYmI3NDZkNzQ3MThmM2ZkYjE3NTBjMTEwOGVmZDBhZDcxZWZjZDUiLCJpYXQiOjE1MTA4MzY2NjcsIm5iZiI6MTUxMDgzNjY2NywiZXhwIjoxNTQyMzcyNjY3LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.CEPGqaYI9rGNG2pTAYCmdXkTaVK7hbk1_8HOCWbpF0RD-tGKYbu0Sjocd4CHNN_lQxk0IfZLjXeAVCFIqi4OF8v4-t9lKdD2bJRe8EZOJM9SvDFmwZuDbsTJEHZJJ4o0WRHQyvk56Z9ENY0epMaxzFAcP8l_lyT3eEc_QfZHk_Ml6F4JPoEe2kCCgciL9YTnfXiRtcymbDhHZu-JKt0bwF1dMzk84JqVPTL5R4URJDOpyJ_yKnCJ9tgeUjEgW1UHWOC4lQdkf0Q3n2zrrdOW0M1S0N1g1WMfLRKjQrCy4EAltec9JtGoBp3zurgE2WvejiR9GDWmoI91yJkCZCQjmOQcG2KPilLpjtOd2K4JsX5vPcjOT2qMGXB49rMN9EnOippxqw_6VzQPdTPYgAafr6D0wYLVHZBCPZdfkHrsOOs_-bMT9Fe9NZIKCdjW3HD5lcVqCaA7vYdILNZKs-FdKVcj4BlIzhm7dCJF5fbCQvSfJb5kbwDkjLs7PjKjmyoh8D2l0hh7OhLVbK0rT3Ec4MyzY83XwalrcIqQYQa_0F9BwjmVvxvQ8sSnkvIumafFJoiht86Y1T2rzUSO-G7iwMCSwLlId9vGAbf3ivER68yJkrhR-6omguFfooI5-ON4ezIJDtE1FZUDEhJcAqeUBPwtLpDt6coTXHgwk9KBHlo']]);
+                'Authorization' => $conf['Authorization']]]);
 $params['json'] = ['list'=>$data];
 $url = $conf['server_host'] . 'api/key/store-many';
 try{
