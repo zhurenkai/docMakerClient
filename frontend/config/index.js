@@ -23,20 +23,20 @@ module.exports = {
   },
   dev: {
     env: require('./dev.env'),
-    port: 8080,
+    port: 8081,
     autoOpenBrowser: false,
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
       '/client-api': {
-        target: 'http://doc-client.local.com',
+        target: 'http://docmaker-client.local.com',
         changeOrigin: true,
         pathRewrite: {
           '^/client-api': ''
         }
       },
       '/api': {
-        target: 'http://doc-server.local.com',
+        target: 'http://docmaker-server.randqun.com',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''

@@ -36,7 +36,7 @@ const constant = {
 const client =  {
   grant_type: 'password',
   id: 2,
-  secret: 'zJ2CaOV4otIbAXig6GLoIlTZ7Y7mnM1PEga74W0Z'
+  secret: 'uBgMv7eBCmQLoOWnUxmqFNO2UNQADBSpx4SEJhNS'
 }
 
 export {client, getUri}
