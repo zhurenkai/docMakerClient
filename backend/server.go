@@ -82,30 +82,41 @@ func requestProxy(w http.ResponseWriter,r *http.Request) {
             }
            writer.WriteField(k,strings.Join(v,``))
         }
-        rand.Seed(time.Now().UnixNano())
         if r.MultipartForm.File !=nil  {
+            rand.Seed(time.Now().UnixNano())
+            // 异步文件处理
+            ch := make(chan string)
+            tmpFileNum := len(r.MultipartForm.File)
             for field := range r.MultipartForm.File{
-                go func() {
+
+                go func(ch chan string) {
                 file, _, _   := r.FormFile(field)
                 tmpFileName := fmt.Sprintf(`%d%d`, rand.Intn(999999999) ,time.Now().Unix())
-                f,err := os.OpenFile(`/tmp/` + tmpFileName,os.O_WRONLY|os.O_CREATE, 0666)
+                f,err := os.OpenFile(`tmp/` + tmpFileName,os.O_WRONLY|os.O_CREATE, 0666)
                 if err !=nil {
                     fmt.Println(err)
                 }
                 io.Copy(f,file)
                 f.Close()
-                writer.CreateFormFile(field,`/tmp/` +tmpFileName)
-                }()
+                writer.CreateFormFile(field,`tmp/` +tmpFileName)
+                ch<-`tmp/` +tmpFileName
+                }(ch)
             }
+            //var tmpFile  [tmpFileNum]string
+           for i:=0;i<tmpFileNum;i++{
+               // todo delete tmpFile
+               fmt.Println(<-ch)
+           }
         }
         writer.Close()
         contentType := writer.FormDataContentType()
         writer.Close()
+        fmt.Println(data)
         req,err = http.NewRequest(reqMethod,reqHost + reqUri,data)
-        req.Header.Add(`contentType`,contentType)
+        req.Header.Add(`Content-Type`,contentType)
+        req.Header.Set("Connection", "Keep-Alive")
     }
 
-//fmt.Println(reqHeaders)
 
     // process header
     var headersContainer map[string]string
@@ -113,7 +124,6 @@ func requestProxy(w http.ResponseWriter,r *http.Request) {
     for k,v:= range headersContainer {
         req.Header.Add(k,v)
     }
-
     //fmt.Println(r.PostForm)
 
     resp,err :=client.Do(req)
