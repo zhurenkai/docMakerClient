@@ -64,8 +64,6 @@ func requestProxy(w http.ResponseWriter,r *http.Request) {
         reqHost = jsonContainer[`request_host`]
         reqUri = jsonContainer[`request_uri`]
         jsonData := jsonContainer[`json_input`]
-        //var data interface{}
-        //data = json.Unmarshal([]byte(jsondata),&data)
         data :=bytes.NewReader([]byte(jsonData))
         req,err = http.NewRequest(reqMethod,reqHost + reqUri,data)
     } else {
@@ -87,33 +85,40 @@ func requestProxy(w http.ResponseWriter,r *http.Request) {
             // 异步文件处理
             ch := make(chan string)
             tmpFileNum := len(r.MultipartForm.File)
+            // 文件写入表单
             for field := range r.MultipartForm.File{
-
-                go func(ch chan string) {
-                file, _, _   := r.FormFile(field)
-                tmpFileName := fmt.Sprintf(`%d%d`, rand.Intn(999999999) ,time.Now().Unix())
-                f,err := os.OpenFile(`tmp/` + tmpFileName,os.O_WRONLY|os.O_CREATE, 0666)
+                go func(ch chan string, field string) {
+                file, fileHeader, _   := r.FormFile(field)
+                tmpFile := `tmp/` + fileHeader.Filename
+                f,err := os.OpenFile(tmpFile,os.O_WRONLY|os.O_CREATE, 0666)
                 if err !=nil {
                     fmt.Println(err)
                 }
                 io.Copy(f,file)
                 f.Close()
-                writer.CreateFormFile(field,`tmp/` +tmpFileName)
-                ch<-`tmp/` +tmpFileName
-                }(ch)
+                fileWriter,err := writer.CreateFormFile(field,tmpFile)
+                    fh, err := os.Open(tmpFile)
+                    defer fh.Close()
+                io.Copy(fileWriter,fh)
+                ch<-tmpFile
+                }(ch,field)
             }
-            //var tmpFile  [tmpFileNum]string
            for i:=0;i<tmpFileNum;i++{
-               // todo delete tmpFile
-               fmt.Println(<-ch)
+               <-ch
            }
+
+           // 删除文件
+            go func() {
+                os.RemoveAll(`tmp`)
+                os.Mkdir(`tmp`,0777)
+            }()
         }
+
         writer.Close()
         contentType := writer.FormDataContentType()
         writer.Close()
-        fmt.Println(data)
         req,err = http.NewRequest(reqMethod,reqHost + reqUri,data)
-        req.Header.Add(`Content-Type`,contentType)
+        req.Header.Set(`Content-Type`,contentType)
         req.Header.Set("Connection", "Keep-Alive")
     }
 
@@ -124,8 +129,6 @@ func requestProxy(w http.ResponseWriter,r *http.Request) {
     for k,v:= range headersContainer {
         req.Header.Add(k,v)
     }
-    //fmt.Println(r.PostForm)
-
     resp,err :=client.Do(req)
     bodyBytes,_ := ioutil.ReadAll(resp.Body)
     defer resp.Body.Close()
@@ -133,5 +136,5 @@ func requestProxy(w http.ResponseWriter,r *http.Request) {
     if err != nil {
         fmt.Println(err)  
     }
-    //fmt.Println(r.Form)
+
 }
