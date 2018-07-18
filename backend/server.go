@@ -14,11 +14,13 @@ import(
     "time"
     "io"
     "os"
+    "path/filepath"
 )
 
 type server struct {
     remoteServerHost string
     port int
+    path string
 }
 
 type config struct {
@@ -26,38 +28,48 @@ type config struct {
     ClientID         string `json:"client_id"`
     ClientSecret     string `json:"client_secret"`
     Port             int    `json:"port"`
-    Db               struct {
-        Host     string `json:"host"`
-        Port     int    `json:"port"`
-        Database string `json:"database"`
-        Username string `json:"username"`
-        Password string `json:"password"`
-    } `json:"db"`
+    Db              dbConfig `json:"db"`
+}
+
+type dbConfig struct {
+    Host     string `json:"host"`
+    Port     int    `json:"port"`
+    Database string `json:"database"`
+    Username string `json:"username"`
+    Password string `json:"password"`
 }
 
 func main() {
-
-    server := server{}
+    server := newServer()
     server.serve()
-
 }
 
 func (s *server) serve (){
-    s.loadConfig()
     mux := http.NewServeMux()
-    hFile := http.FileServer(http.Dir(`../frontend/dist`))
+    hFile := http.FileServer(http.Dir(filepath.Dir(s.path) + `/frontend/dist`))
     mux.HandleFunc(`/api/`,s.apiProxy)
-    mux.HandleFunc(`/client-api/`,requestProxy)
+    mux.HandleFunc(`/client-api/`,s.requestProxy)
     mux.Handle(`/`,hFile)
-    fmt.Sprintln(`server started on http://localhost:%d`,s.port)
+    fmt.Sprintln(`server started on http://localhost:`,s.port)
     addr := fmt.Sprintf(`:%d`,s.port)
     http.ListenAndServe(addr,mux)
+}
 
+func newServer() *server{
+    s := new(server)
+    s.getPath()
+    s.loadConfig()
+    return s
+}
 
+func (s *server)getPath()  {
+    //dir,_ :=filepath.Abs(filepath.Dir(os.Args[0]))
+    //s.path = dir
+    s.path = `/home/akon/project/docMakerClient/backend`
 }
 
 func (s *server)loadConfig()  {
-    conf,err := ioutil.ReadFile(`config.json`)
+    conf,err := ioutil.ReadFile(s.path + `/config.json`)
     if err !=nil  {
         fmt.Println(err)
     }
@@ -88,7 +100,7 @@ func (s *server)apiProxy(w http.ResponseWriter,r *http.Request) {
     proxy.ServeHTTP(w, r)
 }
 
-func requestProxy(w http.ResponseWriter,r *http.Request) {
+func (s *server)requestProxy(w http.ResponseWriter,r *http.Request) {
     ct :=r.Header.Get("Content-Type")
     var reqHeaders,reqMethod,reqHost,reqUri string
     var req *http.Request
@@ -113,6 +125,10 @@ func requestProxy(w http.ResponseWriter,r *http.Request) {
         reqMethod = strings.Join(r.Form[`request_method`],``)
         reqHost = strings.Join(r.Form[`request_host`],``)
         reqUri = strings.Join(r.Form[`request_uri`],``)
+        if reqHost + reqUri == ``{
+            fmt.Fprint(w,`empty url!`)
+            return
+        }
         data := &bytes.Buffer{}
         writer := multipart.NewWriter(data)
         for k,v := range r.Form {
@@ -130,7 +146,7 @@ func requestProxy(w http.ResponseWriter,r *http.Request) {
             for field := range r.MultipartForm.File{
                 go func(ch chan string, field string) {
                 file, fileHeader, _   := r.FormFile(field)
-                tmpFile := `tmp/` + fileHeader.Filename
+                tmpFile := s.path + `/tmp/` + fileHeader.Filename
                 f,err := os.OpenFile(tmpFile,os.O_WRONLY|os.O_CREATE, 0666)
                 if err !=nil {
                     fmt.Println(err)
@@ -150,8 +166,9 @@ func requestProxy(w http.ResponseWriter,r *http.Request) {
 
            // 删除文件
             go func() {
-                os.RemoveAll(`tmp`)
-                os.Mkdir(`tmp`,0777)
+                tmpPath := s.path + `/tmp`
+                os.RemoveAll(tmpPath)
+                os.Mkdir(tmpPath,0777)
             }()
         }
 
