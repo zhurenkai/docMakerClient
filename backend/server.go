@@ -16,23 +16,64 @@ import(
     "os"
 )
 
+type server struct {
+    remoteServerHost string
+    port int
+}
+
+type config struct {
+    RemoteServerHost string `json:"remote_server_host"`
+    ClientID         string `json:"client_id"`
+    ClientSecret     string `json:"client_secret"`
+    Port             int    `json:"port"`
+    Db               struct {
+        Host     string `json:"host"`
+        Port     int    `json:"port"`
+        Database string `json:"database"`
+        Username string `json:"username"`
+        Password string `json:"password"`
+    } `json:"db"`
+}
+
 func main() {
 
-mux := http.NewServeMux()
-
-hFile := http.FileServer(http.Dir(`../frontend/dist`))
-
- mux.HandleFunc(`/api/`,apiProxy)
- mux.HandleFunc(`/client-api/`,requestProxy)
- mux.Handle(`/`,hFile)
-
-
-  http.ListenAndServe(":9999",mux)
+    server := server{}
+    server.serve()
 
 }
 
-func apiProxy(w http.ResponseWriter,r *http.Request) {
-    remote,err := url.Parse(`http://docmaker-server.randqun.com`)
+func (s *server) serve (){
+    s.loadConfig()
+    mux := http.NewServeMux()
+    hFile := http.FileServer(http.Dir(`../frontend/dist`))
+    mux.HandleFunc(`/api/`,s.apiProxy)
+    mux.HandleFunc(`/client-api/`,requestProxy)
+    mux.Handle(`/`,hFile)
+    fmt.Sprintln(`server started on http://localhost:%d`,s.port)
+    addr := fmt.Sprintf(`:%d`,s.port)
+    http.ListenAndServe(addr,mux)
+
+
+}
+
+func (s *server)loadConfig()  {
+    conf,err := ioutil.ReadFile(`config.json`)
+    if err !=nil  {
+        fmt.Println(err)
+    }
+    var c config
+    err = json.Unmarshal(conf,&c)
+    if err !=nil  {
+        fmt.Println(err)
+    }
+    s.remoteServerHost = c.RemoteServerHost
+    s.port = c.Port
+}
+
+
+func (s *server)apiProxy(w http.ResponseWriter,r *http.Request) {
+    remoteServerHost := `http://` + s.remoteServerHost
+    remote,err := url.Parse(remoteServerHost)
     if err !=nil {
        fmt.Println(err)
     }
@@ -43,7 +84,7 @@ func apiProxy(w http.ResponseWriter,r *http.Request) {
     r.RequestURI = string(b[4:])
     r.URL = &url.URL{Path:r.RequestURI}
     // 重设host否则就是反向代理，会将原来的请求带过去导致
-    r.Host = `docmaker-server.randqun.com`
+    r.Host = s.remoteServerHost
     proxy.ServeHTTP(w, r)
 }
 
@@ -55,10 +96,10 @@ func requestProxy(w http.ResponseWriter,r *http.Request) {
     var client http.Client
     if ct ==`application/json` {
         jsonInput,_ := ioutil.ReadAll(r.Body)
-        fmt.Println(jsonInput)
+       // fmt.Println(jsonInput)
         var jsonContainer map[string]string
-        err := json.Unmarshal(jsonInput,&jsonContainer)
-        fmt.Println(jsonContainer,err)
+        json.Unmarshal(jsonInput,&jsonContainer)
+       // fmt.Println(jsonContainer,err)
         reqHeaders = jsonContainer[`request_headers`]
         reqMethod = jsonContainer[`request_method`]
         reqHost = jsonContainer[`request_host`]
