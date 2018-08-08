@@ -15,32 +15,36 @@ import(
     "io"
     "os"
     "path/filepath"
+    "database/sql"
+    "log"
+    _ "github.com/go-sql-driver/mysql"
+
+    "crypto/md5"
 )
 
 type server struct {
-    remoteServerHost string
-    port int
+    config config
     path string
+
 }
 
 type config struct {
     RemoteServerHost string `json:"remote_server_host"`
-    ClientID         string `json:"client_id"`
+    ClientID         int `json:"client_id"`
     ClientSecret     string `json:"client_secret"`
     Port             int    `json:"port"`
-    Db              dbConfig `json:"db"`
 }
 
 type dbConfig struct {
     Host     string `json:"host"`
     Port     int    `json:"port"`
-    Database string `json:"database"`
+    Databases []string `json:"databases"`
     Username string `json:"username"`
     Password string `json:"password"`
 }
 
 func main() {
-    server := newServer()
+    server := NewServer()
     server.serve()
 }
 
@@ -49,13 +53,15 @@ func (s *server) serve (){
     hFile := http.FileServer(http.Dir(filepath.Dir(s.path) + `/frontend/dist`))
     mux.HandleFunc(`/api/`,s.apiProxy)
     mux.HandleFunc(`/client-api/`,s.requestProxy)
+    mux.HandleFunc(`/import-db-comments`,s.importDBComments)
+    mux.HandleFunc(`/client-info`,s.clientInfo)
     mux.Handle(`/`,hFile)
-    fmt.Sprintln(`server started on http://localhost:`,s.port)
-    addr := fmt.Sprintf(`:%d`,s.port)
+    fmt.Println(`server started on http://localhost:`,s.config.Port)
+    addr := fmt.Sprintf(`:%d`,s.config.Port)
     http.ListenAndServe(addr,mux)
 }
 
-func newServer() *server{
+func NewServer() *server{
     s := new(server)
     s.getPath()
     s.loadConfig()
@@ -78,13 +84,12 @@ func (s *server)loadConfig()  {
     if err !=nil  {
         fmt.Println(err)
     }
-    s.remoteServerHost = c.RemoteServerHost
-    s.port = c.Port
+    s.config = c
 }
 
-
+// 转发对后端api的请求
 func (s *server)apiProxy(w http.ResponseWriter,r *http.Request) {
-    remoteServerHost := `http://` + s.remoteServerHost
+    remoteServerHost := `http://` + s.config.RemoteServerHost
     remote,err := url.Parse(remoteServerHost)
     if err !=nil {
        fmt.Println(err)
@@ -96,10 +101,11 @@ func (s *server)apiProxy(w http.ResponseWriter,r *http.Request) {
     r.RequestURI = string(b[4:])
     r.URL = &url.URL{Path:r.RequestURI}
     // 重设host否则就是反向代理，会将原来的请求带过去导致
-    r.Host = s.remoteServerHost
+    r.Host = s.config.RemoteServerHost
     proxy.ServeHTTP(w, r)
 }
 
+// 转发用户的请求
 func (s *server)requestProxy(w http.ResponseWriter,r *http.Request) {
     ct :=r.Header.Get("Content-Type")
     var reqHeaders,reqMethod,reqHost,reqUri string
@@ -195,4 +201,74 @@ func (s *server)requestProxy(w http.ResponseWriter,r *http.Request) {
         fmt.Println(err)  
     }
 
+}
+
+func (s *server)clientInfo(w http.ResponseWriter,r *http.Request)  {
+    clientInfo := make(map[string]interface{})
+    clientInfo[`id`] = s.config.ClientID
+    clientInfo[`secret`] = s.config.ClientSecret
+    fmt.Fprint(w, response(clientInfo))
+}
+
+// 上传数据库comment
+func (s *server)importDBComments(w http.ResponseWriter,r *http.Request){
+    jsonInput,_ := ioutil.ReadAll(r.Body)
+    var DB  dbConfig
+    json.Unmarshal(jsonInput,&DB)
+    DBStatement := fmt.Sprintf(`%s:%s@tcp(%s:%d)/information_schema?charset=utf8`,DB.Username,DB.Password,DB.Host,DB.Port)
+    db,err := sql.Open(`mysql`,DBStatement)
+    if err != nil {
+        fmt.Println(err)
+        fmt.Fprint(w,errResponse(1,`连接本地数据库失败`))
+        return
+    }
+    rows,err := db.Query(`SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT FROM COLUMNS WHERE COLUMN_COMMENT !="" AND TABLE_SCHEMA IN ("devgsv3") ORDER BY COLUMN_COMMENT DESC`)
+    //rows,err := db.Query(`SELECT * FROM Account limit 3`)
+    if err != nil {
+        log.Print(err,`exec failed`)
+        return
+    }
+    list := make(map[string]map[string]string)
+
+    for rows.Next() {
+        var COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT string
+        rows.Scan(&COLUMN_NAME,&DATA_TYPE,&COLUMN_COMMENT)
+        if err != nil {
+            continue
+        }
+        key := md5Helper(COLUMN_NAME + DATA_TYPE + COLUMN_COMMENT)
+        item := make(map[string]string)
+        item[`key`] = COLUMN_NAME
+        item[`statement`] = COLUMN_COMMENT
+        item[`type`] = DATA_TYPE
+        list[string(key)] = item
+    }
+    fmt.Fprint(w,response(list))
+}
+
+func errResponse(code int,message string)(data string){
+    res := make(map[string]interface{})
+    res[`code`] = code
+    res[`message`] = message
+    b,_ := json.Marshal(res)
+    data = string(b)
+    return
+}
+
+func response(data interface{})(result string){
+    res := make(map[string]interface{})
+    res[`code`] = 0
+    res[`data`] = data
+    resByte,_ := json.Marshal(res)
+    result = string(resByte)
+    return
+}
+
+
+func md5Helper (source string) (result string){
+    Md5Inst := md5.New()
+    Md5Inst.Write([]byte(source))
+    res := Md5Inst.Sum([]byte(""))
+    result = fmt.Sprintf("%x", res)
+    return
 }

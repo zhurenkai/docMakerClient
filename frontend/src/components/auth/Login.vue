@@ -26,16 +26,15 @@
 </template>
 
 <script type="text/ecmascript-6">
-    import { client } from '../../config'
     export default {
         data() {
             return {
                 form: {
                     username: 'zhurkai@163.com',
                     password: '123456',
-                    grant_type: client.grant_type,
-                    client_id: client.id,
-                    client_secret: client.secret,
+                    grant_type: 'password',
+                    client_id: 0,
+                    client_secret: '',
                 }
             }
         },
@@ -65,7 +64,19 @@
                     this.$message.error(response.body.message)
                 })
 
+            },
+            loadData () {
+            this.axios.get('/client-info').then((response)=>{
+              if(response.data.code){
+              this.$message.error('获取client信息失败')
+              }
+              this.form.client_id = response.data.data.id
+              this.form.client_secret = response.data.data.secret
+            })
             }
+        },
+        created () {
+        this.loadData()
         }
     }
 </script>

@@ -1,13 +1,6 @@
 {
-  "remote_server_host":"docmaker-server.randqun.com",
-  "client_id":"",
-  "client_secret":"",
-  "port":9999,
-  "db":{
-    "host":"127.0.0.1",
-    "port":3306,
-    "database":"",
-    "username":"root",
-    "password":""
-  }
+  "remote_server_host":"doc-server.local.com",
+  "client_id":2,
+  "client_secret":"zJ2CaOV4otIbAXig6GLoIlTZ7Y7mnM1PEga74W0Z",
+  "port":9999
 }

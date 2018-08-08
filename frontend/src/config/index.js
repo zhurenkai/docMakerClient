@@ -33,10 +33,5 @@ const constant = {
   }
 }
 
-const client =  {
-  grant_type: 'password',
-  id: 2,
-  secret: 'uBgMv7eBCmQLoOWnUxmqFNO2UNQADBSpx4SEJhNS'
-}
 
-export {client, getUri}
+export { getUri }
