@@ -58,8 +58,11 @@
                 </el-menu-item>
 
             </el-submenu>
-
-            <el-menu-item index="/settings" @click="link('/settings')"><i class="el-icon-setting"></i>设置</el-menu-item>
+            <el-submenu index="/settings">
+                <template slot="title"><i class="el-icon-setting"></i>设置</template>
+                <el-menu-item index="/hostSettings" @click="link('/hostSettings')">环境域名</el-menu-item>
+                <el-menu-item index="/importStateSettings" @click="link('/importStateSettings')">导入字段注释</el-menu-item>
+            </el-submenu>
         </el-menu>
 
 
@@ -119,7 +122,7 @@
     },
     methods: {
       getProjects: function () {
-        let uri = getUri('project', 'user_project')
+        let uri = getUri('project', 'projects_with_api')
         this.axios.get(uri).then((response) => {
           let projects = response.data.data
           this.projects = projects

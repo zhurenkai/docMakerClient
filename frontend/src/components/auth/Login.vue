@@ -33,8 +33,8 @@
                     username: 'zhurkai@163.com',
                     password: '123456',
                     grant_type: 'password',
-                    client_id: 0,
-                    client_secret: '',
+                    client_id: 2,
+                    client_secret: 'zJ2CaOV4otIbAXig6GLoIlTZ7Y7mnM1PEga74W0Z',
                 }
             }
         },
@@ -76,7 +76,7 @@
             }
         },
         created () {
-        this.loadData()
+//        this.loadData()
         }
     }
 </script>

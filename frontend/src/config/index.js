@@ -12,7 +12,8 @@ const constant = {
     resource: 'api/'
   },
   project: {
-    user_project: 'user-project'
+    user_project: 'user-project',
+    projects_with_api: 'projects-with-api'
   },
   module: {
     resource: 'module'

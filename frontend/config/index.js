@@ -29,14 +29,14 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/client-api': {
-        target: 'http://docmaker-client.local.com',
+        target: 'http://doc-client.local.com',
         changeOrigin: true,
         pathRewrite: {
           '^/client-api': ''
         }
       },
       '/api': {
-        target: 'http://docmaker-server.randqun.com',
+        target: 'http://doc-server.local.com',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''

@@ -223,7 +223,6 @@ func (s *server)importDBComments(w http.ResponseWriter,r *http.Request){
         return
     }
     rows,err := db.Query(`SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT FROM COLUMNS WHERE COLUMN_COMMENT !="" AND TABLE_SCHEMA IN ("devgsv3") ORDER BY COLUMN_COMMENT DESC`)
-    //rows,err := db.Query(`SELECT * FROM Account limit 3`)
     if err != nil {
         log.Print(err,`exec failed`)
         return

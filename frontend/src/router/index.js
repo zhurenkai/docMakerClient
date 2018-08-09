@@ -22,10 +22,10 @@ const routes = [
       component: Authlogin
     },
     {
-      path: '/settings',
-      name: 'Settings',
+      path: '/hostSettings',
+      name: 'HostSettings',
       components: {
-        default: require('../components/settings/Settings'),
+        default: require('../components/settings/HostSettings'),
           left_menu:require('../components/layouts/LeftMenu'),
           top_menu:require('../components/layouts/TopMenu'),
       },
@@ -33,6 +33,18 @@ const routes = [
         requireAuth: true
       }
     },
+  {
+    path: '/importStateSettings',
+    name: 'ImportStateSettings',
+    components: {
+      default: require('../components/settings/ImportStateSettings'),
+      left_menu:require('../components/layouts/LeftMenu'),
+      top_menu:require('../components/layouts/TopMenu'),
+    },
+    meta: {
+      requireAuth: true
+    }
+  },
     {
       path: '/workbench',
       name: 'Workbench',
