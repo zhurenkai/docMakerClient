@@ -27,22 +27,6 @@
 
                 </el-form>
 
-                <el-form>
-                    <el-form-item label="MYSQL HOST">
-                        <el-col :span="8"> <el-input ></el-input></el-col>
-                    </el-form-item>
-
-                <el-form-item label="PORT">
-                </el-form-item>
-
-                <el-form-item label="USERNAME">
-                </el-form-item>
-
-                <el-form-item label="PASSWORD">
-                </el-form-item>
-
-
-                </el-form>
             </el-collapse-item>
 
         </el-collapse>

@@ -38,7 +38,7 @@ type config struct {
 type dbConfig struct {
     Host     string `json:"host"`
     Port     int    `json:"port"`
-    Databases []string `json:"databases"`
+    Databases string `json:"databases"`
     Username string `json:"username"`
     Password string `json:"password"`
 }
@@ -53,7 +53,7 @@ func (s *server) serve (){
     hFile := http.FileServer(http.Dir(filepath.Dir(s.path) + `/frontend/dist`))
     mux.HandleFunc(`/api/`,s.apiProxy)
     mux.HandleFunc(`/client-api/`,s.requestProxy)
-    mux.HandleFunc(`/import-db-comments`,s.importDBComments)
+    mux.HandleFunc(`/api/api/import-db-comments`,s.importDBComments)
     mux.HandleFunc(`/client-info`,s.clientInfo)
     mux.Handle(`/`,hFile)
     fmt.Println(`server started on http://localhost:`,s.config.Port)
@@ -94,13 +94,15 @@ func (s *server)apiProxy(w http.ResponseWriter,r *http.Request) {
     if err !=nil {
        fmt.Println(err)
     }
-
+    fmt.Println(r.URL.Path,r.URL.RawQuery)
     proxy :=httputil.NewSingleHostReverseProxy(remote)
     // 重写rui
-    b := []byte(r.RequestURI)
-    r.RequestURI = string(b[4:])
-    r.URL = &url.URL{Path:r.RequestURI}
-    // 重设host否则就是反向代理，会将原来的请求带过去导致
+    b := []byte(r.URL.Path)
+    newUrl := string(b[4:])
+    r.RequestURI = newUrl
+    r.URL = &url.URL{Path:newUrl,RawQuery:r.URL.RawQuery}
+    //fmt.Println(r.Host,r.RequestURI)
+    // 重设host,否则就是反向代理，会将原来的请求带过去
     r.Host = s.config.RemoteServerHost
     proxy.ServeHTTP(w, r)
 }
@@ -222,12 +224,12 @@ func (s *server)importDBComments(w http.ResponseWriter,r *http.Request){
         fmt.Fprint(w,errResponse(1,`连接本地数据库失败`))
         return
     }
-    rows,err := db.Query(`SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT FROM COLUMNS WHERE COLUMN_COMMENT !="" AND TABLE_SCHEMA IN ("devgsv3") ORDER BY COLUMN_COMMENT DESC`)
+    rows,err := db.Query(`SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT FROM COLUMNS WHERE COLUMN_COMMENT !="" AND TABLE_SCHEMA IN (`+ DB.Databases +`) ORDER BY COLUMN_COMMENT DESC`)
     if err != nil {
         log.Print(err,`exec failed`)
         return
     }
-    list := make(map[string]map[string]string)
+    collection := make(map[string]map[string]string)
 
     for rows.Next() {
         var COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT string
@@ -235,12 +237,21 @@ func (s *server)importDBComments(w http.ResponseWriter,r *http.Request){
         if err != nil {
             continue
         }
+        DATA_TYPE = getType(DATA_TYPE)
         key := md5Helper(COLUMN_NAME + DATA_TYPE + COLUMN_COMMENT)
         item := make(map[string]string)
         item[`key`] = COLUMN_NAME
         item[`statement`] = COLUMN_COMMENT
         item[`type`] = DATA_TYPE
-        list[string(key)] = item
+        item[`hash`] = key
+        collection[string(key)] = item
+    }
+    l := len(collection)
+    list := make([]map[string]string,l)
+    i := 0
+    for _,v := range collection {
+        list[i] = v
+       i++
     }
     fmt.Fprint(w,response(list))
 }
@@ -271,3 +282,15 @@ func md5Helper (source string) (result string){
     result = fmt.Sprintf("%x", res)
     return
 }
+
+func getType(DBFieldType string)(fieldType string){
+    switch DBFieldType {
+    case `int`,`bigint`,`tinyint`,`smallint`: fieldType = `int`
+    case `varchar`,`text`,`longtext`,`char`:fieldType = `string`
+    case `decimal`,`double`,`float`:fieldType = `float`
+    default:fieldType = `string`
+    }
+    return
+}
+
+

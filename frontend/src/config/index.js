@@ -31,6 +31,14 @@ const constant = {
   },
   user: {
     info: 'user-info'
+  },
+  db_config: {
+    resource: 'db-config'
+  },
+  db_comment: {
+    import: 'import-db-comments',
+    storeMany: 'comment/store-many',
+    getHash: 'comment/hash'
   }
 }
 
