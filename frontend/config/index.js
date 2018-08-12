@@ -35,6 +35,10 @@ module.exports = {
           '^/client-api': ''
         }
       },
+      '/api/api/import-db-comments': {
+        target: 'http://localhost:9999',
+        changeOrigin: true
+      },
       '/api': {
         target: 'http://doc-server.local.com',
         changeOrigin: true,

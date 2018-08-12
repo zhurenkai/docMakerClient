@@ -56,7 +56,7 @@ func (s *server) serve (){
     mux.HandleFunc(`/api/api/import-db-comments`,s.importDBComments)
     mux.HandleFunc(`/client-info`,s.clientInfo)
     mux.Handle(`/`,hFile)
-    fmt.Println(`server started on http://localhost:`,s.config.Port)
+    fmt.Print(`server started on http://localhost:`,s.config.Port)
     addr := fmt.Sprintf(`:%d`,s.config.Port)
     http.ListenAndServe(addr,mux)
 }
@@ -69,9 +69,9 @@ func NewServer() *server{
 }
 
 func (s *server)getPath()  {
-    //dir,_ :=filepath.Abs(filepath.Dir(os.Args[0]))
-    //s.path = dir
-    s.path = `/home/akon/project/docMakerClient/backend`
+    dir,_ :=filepath.Abs(filepath.Dir(os.Args[0]))
+    s.path = dir
+   // s.path = `/home/akon/project/docMakerClient/backend`
 }
 
 func (s *server)loadConfig()  {
@@ -94,14 +94,12 @@ func (s *server)apiProxy(w http.ResponseWriter,r *http.Request) {
     if err !=nil {
        fmt.Println(err)
     }
-    fmt.Println(r.URL.Path,r.URL.RawQuery)
     proxy :=httputil.NewSingleHostReverseProxy(remote)
     // 重写rui
     b := []byte(r.URL.Path)
     newUrl := string(b[4:])
     r.RequestURI = newUrl
     r.URL = &url.URL{Path:newUrl,RawQuery:r.URL.RawQuery}
-    //fmt.Println(r.Host,r.RequestURI)
     // 重设host,否则就是反向代理，会将原来的请求带过去
     r.Host = s.config.RemoteServerHost
     proxy.ServeHTTP(w, r)
