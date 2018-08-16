@@ -1,7 +1,7 @@
 ####使用
 编辑backend下面的config.json文件
 
->remote_server_host 使用自己搭建好的docMakerServer域名
+>remote_server_host 使用自己搭建好的  [docMakerServer](https://github.com/zhurenkai/docMakerServer)
 >
 >或者使用默认的 http://docmaker-server.randqun.com 此域名只为调试使用不保证长期有效
 >
@@ -14,16 +14,13 @@
 ```
 cd backend/
 ./server
-
 ```
 
 ####开发模式
 
 ```
-
 cd frontend/
 npm run dev
-
 ```
 
 >开发模式的域名配置在frontend/config/index.js设置proxyTable
