@@ -63,26 +63,9 @@
           project_id: '',
           databases:''
         },
-        comments: [ {
-          "hash": "ce5a5aa713a6a322b1ab4dcef0abda02",
-          "key": "GoldenTee",
-          "statement": "金T码距",
-          "type": "int"
-        },
-          {
-            "hash": "3302ffa04d9e02dfecb9a8aa86b4079e",
-            "key": "Result",
-            "statement": "输赢筹码数，正数赢，负数输。",
-            "type": "int"
-          },
-          {
-            "hash": "ec3cc50d4bf1cf6c5adc143bbae47964",
-            "key": "Type",
-            "statement": "类型(1:球员;2:组织、球队;)",
-            "type": "int"
-          }],
+        comments: [],
         new_comments: [],
-        new_comment_count: 3
+        new_comment_count: 0
       }
     },
     created () {
