@@ -76,7 +76,7 @@
             }
         },
         created () {
-//        this.loadData()
+        this.loadData()
         }
     }
 </script>
