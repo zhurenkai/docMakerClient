@@ -69,9 +69,9 @@ func NewServer() *server{
 }
 
 func (s *server)getPath()  {
-    dir,_ :=filepath.Abs(filepath.Dir(os.Args[0]))
-    s.path = dir
-   // s.path = `/home/akon/project/docMakerClient/backend`
+  //  dir,_ :=filepath.Abs(filepath.Dir(os.Args[0]))
+   // s.path = dir
+    s.path = `/Users/zhurenkai/Projects/docMakerClient/backend`
 }
 
 func (s *server)loadConfig()  {

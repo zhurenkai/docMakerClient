@@ -49,7 +49,7 @@
                         </el-menu-item>
                     </el-submenu>
                     <el-menu-item index="0" style="padding-left: 50px" @click="addModule(project)"><i
-                            class="el-icon-plus"></i>模块
+                            class="el-icon-plus"></i>模块1
                     </el-menu-item>
 
                 </el-submenu>

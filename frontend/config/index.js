@@ -28,9 +28,23 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/': {
+      '/client-api': {
+        target: 'http://localhost:9999',
+        changeOrigin: true,
+      },
+      '/api/api/import-db-comments': {
         target: 'http://localhost:9999',
         changeOrigin: true
+      },
+      '/api': {
+        target: 'http://localhost:9999',
+        changeOrigin: true,
+
+      },
+      '/client-info': {
+        target: 'http://localhost:9999',
+        changeOrigin: true,
+
       }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
