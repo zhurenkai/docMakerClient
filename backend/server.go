@@ -15,7 +15,7 @@ import(
     "io"
     "os"
     "path/filepath"
-    "database/sql"
+"database/sql"
     "log"
     _ "github.com/go-sql-driver/mysql"
 
@@ -222,7 +222,9 @@ func (s *server)importDBComments(w http.ResponseWriter,r *http.Request){
         fmt.Fprint(w,errResponse(1,`连接本地数据库失败`))
         return
     }
-    rows,err := db.Query(`SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT FROM COLUMNS WHERE COLUMN_COMMENT !="" AND TABLE_SCHEMA IN (`+ DB.Databases +`) ORDER BY COLUMN_COMMENT DESC`)
+    dbNames := strings.Split(DB.Databases,`,`);
+    dbs := strings.Join(dbNames,`","`)
+    rows,err := db.Query(`SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT FROM COLUMNS WHERE COLUMN_COMMENT !="" AND TABLE_SCHEMA IN ( "`  + dbs + `") ORDER BY COLUMN_COMMENT DESC`)
     if err != nil {
         log.Print(err,`exec failed`)
         return
