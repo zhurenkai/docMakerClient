@@ -51,7 +51,7 @@
 
                                         <!--param按钮-->
                                         <el-button slot="append" v-model="query_params_show"
-                                                   @click="checkUriParams();query_params_show = !query_params_show">
+                                                   @click="checkUriParams(); query_params_show = !query_params_show">
                                             params
                                         </el-button>
 

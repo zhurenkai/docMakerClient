@@ -49,8 +49,10 @@
                         </el-menu-item>
                     </el-submenu>
                     <el-menu-item index="0" style="padding-left: 50px" @click="addModule(project)"><i
-                            class="el-icon-plus"></i>模块1
+                            class="el-icon-plus"></i>模块
                     </el-menu-item>
+                  <el-menu-item index="0" style="padding-left: 50px" @click="importApi(project)">导入
+                  </el-menu-item>
 
                 </el-submenu>
                 <el-menu-item index="0" style="padding-left: 50px" @click="addProject(projects)"><i
@@ -87,6 +89,9 @@
                     <el-input v-model="form.description" auto-complete="off"></el-input>
 
                 </el-form-item>
+              <el-form-item label="curl code">
+                <el-input type="textarea" v-model="form.curl_code" auto-complete="off"></el-input>
+              </el-form-item>
 
 
             </el-form>
@@ -115,7 +120,8 @@
         addBox: false,
         form: {
           name: '',
-          description: ''
+          description: '',
+          curl_code: '',
         },
         removeIndex:{}
       }
@@ -184,6 +190,9 @@
         this.uri = getUri('api', 'resource')
         this.pushIndex.project = this.projects.indexOf(project)
         this.pushIndex.module = project.modules.indexOf(module)
+      },
+      importApi(){
+
       },
       submitForm(){
         console.log(this.form)
