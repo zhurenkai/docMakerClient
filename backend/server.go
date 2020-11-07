@@ -69,9 +69,9 @@ func NewServer() *server{
 }
 
 func (s *server)getPath()  {
-  //  dir,_ :=filepath.Abs(filepath.Dir(os.Args[0]))
-   // s.path = dir
-    s.path = `/Users/zhurenkai/Projects/docMakerClient/backend`
+    // dir,_ :=filepath.Abs(filepath.Dir(os.Args[0]))
+   //  s.path = dir
+    s.path = `/Users/zhurenkai/project/docMakerClient/backend`
 }
 
 func (s *server)loadConfig()  {
@@ -194,13 +194,14 @@ func (s *server)requestProxy(w http.ResponseWriter,r *http.Request) {
         req.Header.Add(k,v)
     }
     resp,err :=client.Do(req)
-    bodyBytes,_ := ioutil.ReadAll(resp.Body)
-    defer resp.Body.Close()
-    fmt.Fprint(w,string(bodyBytes))
-    if err != nil {
-        fmt.Println(err)  
-    }
 
+    if err != nil {
+           fmt.Fprint(w,string(bodyBytes))
+                    return
+        }
+        defer resp.Body.Close()
+    bodyBytes,_ := ioutil.ReadAll(resp.Body)
+    fmt.Fprint(w,string(bodyBytes))
 }
 
 func (s *server)clientInfo(w http.ResponseWriter,r *http.Request)  {
